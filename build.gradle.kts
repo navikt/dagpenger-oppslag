@@ -88,15 +88,16 @@ java {
 
 val wsdlDir = "$projectDir/src/main/resources/wsdl"
 
-val wsdlsToGenerate = listOf("$wsdlDir/arena/Binding.wsdl", "$wsdlDir/gsak/Binding.wsdl", "$wsdlDir/person/Binding.wsdl")
+val wsdlsToGenerate = listOf("$wsdlDir/arena/Binding.wsdl", "$wsdlDir/gsak/SakV2.wsdl", "$wsdlDir/person/Binding.wsdl")
 
-val wsdl2javatask = tasks.create<JavaExec>("wsdl2Java") {
-    description = "Runs org.apache.cxf.tools.wsdlto.WSDLToJava on wsdls in src/main/resources and places generated classes in build/generated-sources"
-    main = "org.apache.cxf.tools.wsdlto.WSDLToJava"
-    classpath = project.configurations.getByName("wsdl2java")
-    
-    inputs.files(file("src/main/resources/wsdl/arena/Binding.wsdl"))
-    args(listOf("-d", "build/generated-sources", "src/main/resources/wsdl/arena/Binding.wsdl"))
+val wsdl2javatask = tasks.create("wsdl2java") {
+    wsdlsToGenerate.forEach { wsdl ->
+        javaexec {
+            main = "org.apache.cxf.tools.wsdlto.WSDLToJava"
+            classpath = project.configurations.getByName("wsdl2java")
+            args(listOf("-d", "build/generated-sources", wsdl))
+        }
+    }
 }
 
 tasks.getByName("compileJava").dependsOn(wsdl2javatask)
