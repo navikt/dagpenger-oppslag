@@ -1,5 +1,3 @@
-import no.nils.wsdl2java.Wsdl2JavaTask
-
 plugins {
     id("application")
     kotlin("jvm") version "1.2.51"
@@ -7,7 +5,6 @@ plugins {
     id("com.palantir.docker") version "0.20.1"
     id("com.palantir.git-version") version "0.11.0"
     id("com.adarshr.test-logger") version "1.5.0"
-    id("no.nils.wsdl2java") version "0.10"
 }
 
 apply {
@@ -36,8 +33,8 @@ application {
 docker {
     name = "repo.adeo.no:5443/navikt/${application.applicationName}"
     buildArgs(mapOf(
-        "APP_NAME" to application.applicationName,
-        "DIST_TAR" to "${application.applicationName}-${project.version}"
+            "APP_NAME" to application.applicationName,
+            "DIST_TAR" to "${application.applicationName}-${project.version}"
     ))
     files(tasks.findByName("distTar")?.outputs)
     pull(true)
@@ -49,6 +46,9 @@ val fuelVersion = "1.15.0"
 val confluentVersion = "4.1.2"
 val kafkaVersion = "2.0.0"
 val ktorVersion = "0.9.5"
+val cxfVersion = "2.5.1"
+
+val wsdl2java by configurations.creating
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -58,6 +58,10 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
 
     compile("io.ktor:ktor-server-netty:$ktorVersion")
+
+    wsdl2java("org.apache.cxf:cxf-tools:$cxfVersion")
+    wsdl2java("org.apache.cxf:cxf-tools-wsdlto-databinding-jaxb:$cxfVersion")
+    wsdl2java("org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws:$cxfVersion")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
@@ -75,12 +79,25 @@ spotless {
     }
 }
 
-project.afterEvaluate {
-    tasks.create<Wsdl2JavaTask>("wsdl") {
-        generatedWsdlDir = File("build/generated-sources")
-        wsdlsToGenerate = arrayListOf(
-                arrayListOf("src/main/resources/wsdl/arena/Binding.wsdl"),
-                arrayListOf("src/main/resources/wsdl/person/Binding.wsdl"))
-        wsdl2java()
+// WSDL generation
+
+java {
+    val mainJavaSourceSet: SourceDirectorySet = sourceSets.getByName("main").java
+    mainJavaSourceSet.srcDir("$projectDir/build/generated-sources")
+}
+
+val wsdlDir = "$projectDir/src/main/resources/wsdl"
+
+val wsdlsToGenerate = listOf("$wsdlDir/arena/Binding.wsdl", "$wsdlDir/gsak/SakV2.wsdl", "$wsdlDir/person/Binding.wsdl")
+
+val wsdl2javatask = tasks.create("wsdl2java") {
+    wsdlsToGenerate.forEach { wsdl ->
+        javaexec {
+            main = "org.apache.cxf.tools.wsdlto.WSDLToJava"
+            classpath = project.configurations.getByName("wsdl2java")
+            args(listOf("-d", "build/generated-sources", wsdl))
+        }
     }
 }
+
+tasks.getByName("compileJava").dependsOn(wsdl2javatask)
