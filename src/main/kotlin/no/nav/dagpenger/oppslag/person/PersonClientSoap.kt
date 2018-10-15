@@ -1,7 +1,7 @@
 package no.nav.dagpenger.oppslag.person
 
-class PersonClientDummy : PersonClient {
+class PersonClientSoap() : PersonClient {
     override fun getGeografiskTilknytning(fødelsnummer: String): String {
-        return "0000"
+        return ""
     }
 }

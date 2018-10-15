@@ -1,19 +1,33 @@
 package no.nav.dagpenger.oppslag
 
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.features.CallLogging
+import io.ktor.features.DefaultHeaders
+import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import mu.KotlinLogging
-import no.nav.dagpenger.oppslag.arena.ArenaClient
 import no.nav.dagpenger.oppslag.arena.ArenaClientDummy
-import no.nav.dagpenger.oppslag.person.PersonClient
+import no.nav.dagpenger.oppslag.arena.arena
 import no.nav.dagpenger.oppslag.person.PersonClientDummy
+import no.nav.dagpenger.oppslag.person.person
 
 private val LOGGER = KotlinLogging.logger {}
 
-class Oppslag(private val arenaClient: ArenaClient, private val personClient: PersonClient) {
+fun main(args: Array<String>) {
+    embeddedServer(Netty, port = 8090, module = Application::main).start(wait = true)
+}
 
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val oppslag = Oppslag(ArenaClientDummy(), PersonClientDummy())
-        }
+fun Application.main() {
+    install(DefaultHeaders)
+    install(CallLogging)
+
+    val personClient = PersonClientDummy()
+    val arenaClient = ArenaClientDummy()
+
+    routing {
+        person(personClient)
+        arena(arenaClient)
     }
 }
