@@ -5,6 +5,7 @@ plugins {
     id("com.palantir.docker") version "0.20.1"
     id("com.palantir.git-version") version "0.11.0"
     id("com.adarshr.test-logger") version "1.5.0"
+    id("uk.co.boothen.gradle.wsimport") version "0.3.4"
 }
 
 apply {
@@ -48,7 +49,7 @@ val kafkaVersion = "2.0.0"
 val ktorVersion = "0.9.5"
 val cxfVersion = "2.5.1"
 
-val wsdl2java by configurations.creating
+val jaxws by configurations.creating
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -59,9 +60,7 @@ dependencies {
 
     compile("io.ktor:ktor-server-netty:$ktorVersion")
 
-    wsdl2java("org.apache.cxf:cxf-tools:$cxfVersion")
-    wsdl2java("org.apache.cxf:cxf-tools-wsdlto-databinding-jaxb:$cxfVersion")
-    wsdl2java("org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws:$cxfVersion")
+    jaxws("com.sun.xml.ws:jaxws-tools:2.1.4")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
@@ -79,25 +78,16 @@ spotless {
     }
 }
 
-// WSDL generation
-
 java {
     val mainJavaSourceSet: SourceDirectorySet = sourceSets.getByName("main").java
     mainJavaSourceSet.srcDir("$projectDir/build/generated-sources")
 }
 
-val wsdlDir = "$projectDir/src/main/resources/wsdl"
-
-val wsdlsToGenerate = listOf("$wsdlDir/arena/Binding.wsdl", "$wsdlDir/gsak/SakV2.wsdl", "$wsdlDir/person/Binding.wsdl")
-
-val wsdl2javatask = tasks.create("wsdl2java") {
-    wsdlsToGenerate.forEach { wsdl ->
-        javaexec {
-            main = "org.apache.cxf.tools.wsdlto.WSDLToJava"
-            classpath = project.configurations.getByName("wsdl2java")
-            args(listOf("-d", "build/generated-sources", wsdl))
-        }
-    }
+val wsimport = tasks.create<uk.co.boothen.gradle.wsimport.WsImport>("wsimport") {
+    setGeneratedSourceRoot("generated-sources")
+    wsdl("person/Binding.wsdl")
+    wsdl("arena/Binding.wsdl")
+    wsdl("gsak/SakV2.wsdl")
 }
 
-tasks.getByName("compileJava").dependsOn(wsdl2javatask)
+tasks.getByName("compileKotlin").dependsOn(wsimport)
