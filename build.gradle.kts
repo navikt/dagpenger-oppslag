@@ -62,6 +62,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-ws-policy:3.2.6")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:3.2.6")
     implementation("org.apache.cxf:cxf-rt-features-logging:3.2.6")
+    implementation("org.apache.cxf:cxf-rt-transports-http-jetty:3.2.6")
     implementation("org.slf4j:slf4j-simple:1.6.1")
     compile("io.ktor:ktor-server-netty:$ktorVersion")
     jaxws("com.sun.xml.ws:jaxws-tools:2.1.4")
