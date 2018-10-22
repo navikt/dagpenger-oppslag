@@ -47,7 +47,7 @@ val fuelVersion = "1.15.0"
 val confluentVersion = "4.1.2"
 val kafkaVersion = "2.0.0"
 val ktorVersion = "0.9.5"
-val cxfVersion = "2.5.1"
+val cxfVersion = "3.2.6"
 
 val jaxws by configurations.creating
 
@@ -58,13 +58,17 @@ dependencies {
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
     implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
 
-    implementation("org.apache.cxf:cxf-rt-ws-security:3.2.6")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:3.2.6")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:3.2.6")
-    implementation("org.apache.cxf:cxf-rt-features-logging:3.2.6")
-    implementation("org.apache.cxf:cxf-rt-transports-http-jetty:3.2.6")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-transports-http-jetty:$cxfVersion")
+
     implementation("org.slf4j:slf4j-simple:1.6.1")
+
     compile("io.ktor:ktor-server-netty:$ktorVersion")
+    compile("io.ktor:ktor-gson:$ktorVersion")
+
     jaxws("com.sun.xml.ws:jaxws-tools:2.1.4")
 
     testImplementation(kotlin("test"))
@@ -92,6 +96,7 @@ val wsimport = tasks.create<uk.co.boothen.gradle.wsimport.WsImport>("wsimport") 
     setGeneratedSourceRoot("generated-sources")
     wsdl("person/Binding.wsdl")
     wsdl("arena/Binding.wsdl")
+    wsdl("arbeidsfordeling/Binding.wsdl")
     wsdl("gsak/SakV2.wsdl")
 }
 
