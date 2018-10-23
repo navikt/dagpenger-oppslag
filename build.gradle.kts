@@ -8,18 +8,22 @@ plugins {
     id("uk.co.boothen.gradle.wsimport") version "0.3.4"
 }
 
+buildscript {
+    repositories {
+        maven("https://repo.adeo.no/repository/maven-central")
+    }
+}
+
 apply {
     plugin("com.diffplug.gradle.spotless")
     plugin("com.adarshr.test-logger")
 }
 
 repositories {
-    jcenter()
-    mavenCentral()
-    maven(url = "http://packages.confluent.io/maven/")
-    maven(url = "https://dl.bintray.com/kotlin/ktor")
-    maven(url = "https://repo.adeo.no/repository/maven-snapshots/")
-    maven(url = "https://repo.adeo.no/repository/maven-releases/")
+    maven("https://repo.adeo.no/repository/maven-central")
+    maven("https://dl.bintray.com/kotlin/ktor/")
+    maven("https://dl.bintray.com/kotlin/kotlinx")
+    maven("https://dl.bintray.com/kittinunf/maven")
 }
 
 val gitVersion: groovy.lang.Closure<Any> by extra
