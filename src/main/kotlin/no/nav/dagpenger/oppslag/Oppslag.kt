@@ -35,22 +35,18 @@ fun Application.main() {
         }
     }
 
-    val wsClientPerson = WsClient<PersonV3>(
-            "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-    val person = wsClientPerson.createPortForSystemUser(
-            "https://localhost/castlemock/mock/soap/project/rRm85C/Person_v3Port", PersonV3::class.java)
+    val person = WsClient<PersonV3>("https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
+            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/Person_v3Port", PersonV3::class.java)
     val personClient = PersonClientSoap(person)
 
-    val wsClientArbeidsFordeling = WsClient<ArbeidsfordelingV1>(
+    val arbeidsfordeling = WsClient<ArbeidsfordelingV1>(
             "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-    val arbeidsfordeling = wsClientArbeidsFordeling.createPortForSystemUser(
-            "https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
+            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
     val arbeidsfordelingClient = ArbeidsfordelingClientSoap(arbeidsfordeling)
 
-    val wsClientBehandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(
+    val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(
             "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-    val behandleArbeidOgAktivitetOppgave = wsClientBehandleArbeidOgAktivitetOppgave.createPortForSystemUser(
-            "https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
+            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
     val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave)
 
     routing {

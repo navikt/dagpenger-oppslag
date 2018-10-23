@@ -17,6 +17,6 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
 }
 
 data class BestillArenaSakRequest(
-        val behandlendeEnhetId: String,
-        val fødselsnummer: String
+    val behandlendeEnhetId: String,
+    val fødselsnummer: String
 )

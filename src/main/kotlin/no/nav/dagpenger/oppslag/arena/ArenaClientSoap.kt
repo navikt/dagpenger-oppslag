@@ -7,14 +7,15 @@ import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjo
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Tema
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.BestillOppgaveRequest
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.BestillOppgaveResponse
-import java.util.*
+import java.util.Calendar
+import java.util.GregorianCalendar
 import javax.xml.datatype.DatatypeFactory
 
 class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1) {
     fun bestillOppgave(behandlendeEnhetId: String, fødselsnummer: String): String {
         val request = BestillOppgaveRequest()
 
-        request.oppgavetype = Oppgavetype().apply { value = "STARTVEDTAK"}
+        request.oppgavetype = Oppgavetype().apply { value = "STARTVEDTAK" }
 
         request.oppgave = Oppgave().apply {
             tema = Tema().apply { value = "DAG" }
@@ -28,5 +29,4 @@ class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1) {
 
         return response.arenaSakId
     }
-
 }
