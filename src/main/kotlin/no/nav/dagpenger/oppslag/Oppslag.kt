@@ -46,7 +46,7 @@ fun Application.main() {
 
     val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(
             "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
+            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/BehandleArbeidOgAktivitetOppgave_v1Port", BehandleArbeidOgAktivitetOppgaveV1::class.java)
     val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave)
 
     routing {
