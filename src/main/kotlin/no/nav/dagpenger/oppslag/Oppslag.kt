@@ -12,11 +12,12 @@ import io.ktor.server.netty.Netty
 import mu.KotlinLogging
 import no.nav.dagpenger.oppslag.arbeidsfordeling.ArbeidsfordelingClientSoap
 import no.nav.dagpenger.oppslag.arbeidsfordeling.arbeidsfordeling
-import no.nav.dagpenger.oppslag.arena.ArenaClientDummy
+import no.nav.dagpenger.oppslag.arena.ArenaClientSoap
 import no.nav.dagpenger.oppslag.arena.arena
 import no.nav.dagpenger.oppslag.person.PersonClientSoap
 import no.nav.dagpenger.oppslag.person.person
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
+import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.binding.BehandleArbeidOgAktivitetOppgaveV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 
 private val LOGGER = KotlinLogging.logger {}
@@ -34,23 +35,23 @@ fun Application.main() {
         }
     }
 
-    val wsClientPerson = WsClient<PersonV3>(
-            "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-    val person = wsClientPerson.createPortForSystemUser(
-            "https://localhost/castlemock/mock/soap/project/rRm85C/Person_v3Port", PersonV3::class.java)
+    val person = WsClient<PersonV3>("https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
+            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/Person_v3Port", PersonV3::class.java)
     val personClient = PersonClientSoap(person)
 
-    val wsClientArbeidsFordeling = WsClient<ArbeidsfordelingV1>(
+    val arbeidsfordeling = WsClient<ArbeidsfordelingV1>(
             "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-    val arbeidsfordeling = wsClientArbeidsFordeling.createPortForSystemUser(
-            "https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
+            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
     val arbeidsfordelingClient = ArbeidsfordelingClientSoap(arbeidsfordeling)
 
-    val arenaClient = ArenaClientDummy()
+    val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(
+            "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
+            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/BehandleArbeidOgAktivitetOppgave_v1Port", BehandleArbeidOgAktivitetOppgaveV1::class.java)
+    val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave)
 
     routing {
         person(personClient)
-        arena(arenaClient)
         arbeidsfordeling(arbeidsfordelingClient)
+        arena(arenaClient)
     }
 }
