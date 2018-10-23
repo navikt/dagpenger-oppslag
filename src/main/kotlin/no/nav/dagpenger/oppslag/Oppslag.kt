@@ -12,11 +12,12 @@ import io.ktor.server.netty.Netty
 import mu.KotlinLogging
 import no.nav.dagpenger.oppslag.arbeidsfordeling.ArbeidsfordelingClientSoap
 import no.nav.dagpenger.oppslag.arbeidsfordeling.arbeidsfordeling
-import no.nav.dagpenger.oppslag.arena.ArenaClientDummy
+import no.nav.dagpenger.oppslag.arena.ArenaClientSoap
 import no.nav.dagpenger.oppslag.arena.arena
 import no.nav.dagpenger.oppslag.person.PersonClientSoap
 import no.nav.dagpenger.oppslag.person.person
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
+import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.binding.BehandleArbeidOgAktivitetOppgaveV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 
 private val LOGGER = KotlinLogging.logger {}
@@ -46,11 +47,15 @@ fun Application.main() {
             "https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
     val arbeidsfordelingClient = ArbeidsfordelingClientSoap(arbeidsfordeling)
 
-    val arenaClient = ArenaClientDummy()
+    val wsClientBehandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(
+            "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
+    val behandleArbeidOgAktivitetOppgave = wsClientBehandleArbeidOgAktivitetOppgave.createPortForSystemUser(
+            "https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
+    val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave)
 
     routing {
         person(personClient)
-        arena(arenaClient)
         arbeidsfordeling(arbeidsfordelingClient)
+        arena(arenaClient)
     }
 }
