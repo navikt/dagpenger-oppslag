@@ -5,7 +5,6 @@ plugins {
     id("com.palantir.docker") version "0.20.1"
     id("com.palantir.git-version") version "0.11.0"
     id("com.adarshr.test-logger") version "1.5.0"
-    id("uk.co.boothen.gradle.wsimport") version "0.3.4"
 }
 
 buildscript {
@@ -53,8 +52,6 @@ val kafkaVersion = "2.0.0"
 val ktorVersion = "0.9.5"
 val cxfVersion = "3.2.6"
 
-val jaxws by configurations.creating
-
 dependencies {
     implementation(kotlin("stdlib"))
 
@@ -73,7 +70,8 @@ dependencies {
     compile("io.ktor:ktor-server-netty:$ktorVersion")
     compile("io.ktor:ktor-gson:$ktorVersion")
 
-    jaxws("com.sun.xml.ws:jaxws-tools:2.1.4")
+    implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
+    implementation("javax.xml.ws:jaxws-api:2.3.1")
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
@@ -96,12 +94,22 @@ java {
     mainJavaSourceSet.srcDir("$projectDir/build/generated-sources")
 }
 
-val wsimport = tasks.create<uk.co.boothen.gradle.wsimport.WsImport>("wsimport") {
-    setGeneratedSourceRoot("generated-sources")
-    wsdl("person/Binding.wsdl")
-    wsdl("arena/Binding.wsdl")
-    wsdl("arbeidsfordeling/Binding.wsdl")
-    wsdl("gsak/SakV2.wsdl")
-}
+val wsdlDir = "$projectDir/src/main/resources/wsdl"
+val wsdlsToGenerate = listOf("$wsdlDir/arena/Binding.wsdl", "$wsdlDir/gsak/SakV2.wsdl", "$wsdlDir/person/Binding.wsdl", "$wsdlDir/arbeidsfordeling/Binding.wsdl")
+val generatedDir = "$projectDir/build/generated-sources"
 
-tasks.getByName("compileKotlin").dependsOn(wsimport)
+tasks {
+    register("wsimport") {
+        group = "other"
+        doLast {
+            mkdir(generatedDir)
+            wsdlsToGenerate.forEach {
+                ant.withGroovyBuilder {
+                    "taskdef"("name" to "wsimport", "classname" to "com.sun.tools.ws.ant.WsImport", "classpath" to sourceSets.getAt("main").runtimeClasspath.asPath)
+                    "wsimport"("wsdl" to it, "sourcedestdir" to generatedDir, "xnocompile" to true) {}
+                }
+            }
+        }
+    }
+}
+tasks.getByName("compileKotlin").dependsOn("wsimport")
