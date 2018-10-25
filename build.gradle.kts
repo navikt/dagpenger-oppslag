@@ -34,6 +34,11 @@ application {
     mainClassName = "no.nav.dagpenger.oppslag.Oppslag"
 }
 
+sourceSets {
+    getByName("main").java.srcDirs("src/main/kotlin")
+    getByName("test").java.srcDirs("src/test/kotlin")
+}
+
 docker {
     name = "repo.adeo.no:5443/${application.applicationName}"
     buildArgs(mapOf(
