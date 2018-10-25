@@ -1,11 +1,15 @@
 package no.nav.dagpenger.oppslag
 
 import io.ktor.application.Application
+import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.gson.gson
+import io.ktor.http.ContentType
+import io.ktor.response.respondText
+import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -29,8 +33,11 @@ private val dagpengerPersonUrl: String? = System.getenv("DAGPENGER_PERSON_URL")
 private val dagpengerArbeidsfordelingUrl: String? = System.getenv("DAGPENGER_ARBEIDSFORDELING_URL")
 private val dagpengerArenaOppgaveUrl: String? = System.getenv("DAGPENGER_ARENA_OPPGAVE_URL")
 
-fun main(args: Array<String>) {
-    embeddedServer(Netty, port = 8090, module = Application::main).start(wait = true)
+
+class Oppslag {
+    fun main(args: Array<String>) {
+        embeddedServer(Netty, port = 8080, module = Application::main).start(wait = true)
+    }
 }
 
 fun Application.main() {
@@ -58,5 +65,12 @@ fun Application.main() {
         person(personClient)
         arbeidsfordeling(arbeidsfordelingClient)
         arena(arenaClient)
+
+        get("/isAlive") {
+            call.respondText("ALIVE", ContentType.Text.Plain)
+        }
+        get("/isReady") {
+            call.respondText("READY", ContentType.Text.Plain)
+        }
     }
 }
