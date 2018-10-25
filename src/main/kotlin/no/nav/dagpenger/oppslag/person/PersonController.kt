@@ -1,15 +1,16 @@
 package no.nav.dagpenger.oppslag.person
 
 import io.ktor.application.call
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Routing
-import io.ktor.routing.get
+import io.ktor.routing.post
 
 fun Routing.person(personClient: PersonClientSoap) {
-    get("geografisk-tilknytning") {
-        val fødelsnummer = "12345678910"
+    post("geografisk-tilknytning") {
+        val fødselsnummer = call.receive<String>()
 
-        val geografiskTilknytningResponse = personClient.getGeografiskTilknytning(fødelsnummer)
+        val geografiskTilknytningResponse = personClient.getGeografiskTilknytning(fødselsnummer)
 
         call.respond(geografiskTilknytningResponse)
     }

@@ -8,12 +8,10 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningR
 class PersonClientSoap(private val person: PersonV3) {
     fun getGeografiskTilknytning(fødelsnummer: String): GeografiskTilknytningResponse {
         val request = HentGeografiskTilknytningRequest()
-        val aktor = PersonIdent()
-        val norskIdent = NorskIdent()
 
-        norskIdent.ident = fødelsnummer
-        aktor.ident = norskIdent
-        request.aktoer = aktor
+        request.aktoer = PersonIdent().apply {
+            ident = NorskIdent().apply { ident = fødelsnummer }
+        }
 
         val response = person.hentGeografiskTilknytning(request)
 

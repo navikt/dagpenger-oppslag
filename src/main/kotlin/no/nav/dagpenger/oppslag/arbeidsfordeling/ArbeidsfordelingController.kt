@@ -1,22 +1,21 @@
 package no.nav.dagpenger.oppslag.arbeidsfordeling
 
 import io.ktor.application.call
+import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Routing
-import io.ktor.routing.get
+import io.ktor.routing.post
 
 fun Routing.arbeidsfordeling(arbeidsfordelingClient: ArbeidsfordelingClientSoap) {
 
-    get("behandlende-enhet") {
-        val geografiskTilknytningRequest = GeografiskTilknytningRequest(
-                "test",
-                null)
+    post("behandlende-enhet") {
+        val (geografiskTilknytning, diskresjonskode ) = call.receive<GeografiskTilknytningRequest>()
 
-        val geografiskTilknytning = arbeidsfordelingClient.getBehandlendeEnhet(
-                geografiskTilknytningRequest.geografiskTilknytning,
-                geografiskTilknytningRequest.diskresjonskode)
+        val behandlendeEnhet = arbeidsfordelingClient.getBehandlendeEnhet(
+                geografiskTilknytning,
+                diskresjonskode)
 
-        call.respond(geografiskTilknytning ?: "")
+        call.respond(behandlendeEnhet ?: "")
     }
 }
 

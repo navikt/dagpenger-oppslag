@@ -10,17 +10,13 @@ class ArbeidsfordelingClientSoap(private val arbeidsFordeling: ArbeidsfordelingV
 
     fun getBehandlendeEnhet(geografiskTilknytning: String, diskresjonskode: String?): String? {
         val request = FinnBehandlendeEnhetListeRequest()
-        val arbeidfordelingsKriterier = ArbeidsfordelingKriterier()
 
-        diskresjonskode?.let {
-            val diskresjonskoder = Diskresjonskoder()
-            diskresjonskoder.setKodeverksRef(it)
-            arbeidfordelingsKriterier.setDiskresjonskode(diskresjonskoder)
+        request.arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
+            diskresjonskode?.let {
+                this.diskresjonskode = Diskresjonskoder().apply { kodeverksRef = diskresjonskode }
+            }
+            this.geografiskTilknytning = Geografi().apply { kodeverksRef = geografiskTilknytning }
         }
-
-        val geografi = Geografi()
-        geografi.setKodeverksRef(geografiskTilknytning)
-        arbeidfordelingsKriterier.setGeografiskTilknytning(geografi)
 
         val response = arbeidsFordeling.finnBehandlendeEnhetListe(request)
         val behandlendeEnhet = response.behandlendeEnhetListe.minBy { it.enhetId }
