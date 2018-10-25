@@ -26,12 +26,15 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 
 private val LOGGER = KotlinLogging.logger {}
 
-private val username: String? = System.getenv("SRVDAGPENGER_OPPSLAG_USERNAME")
-private val password: String? = System.getenv("SRVDAGPENGER_OPPSLAG_PASSWORD")
-private val oicdStsUrl: String? = System.getenv("SECURITYTOKENSERVICE_URL")
-private val dagpengerPersonUrl: String? = System.getenv("VIRKSOMHET_PERSON_V3_ENDPOINTURL")
-private val dagpengerArbeidsfordelingUrl: String? = System.getenv("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
-private val dagpengerArenaOppgaveUrl: String? = System.getenv("VIRKSOMHET_BEHANDLENDE_ARBEID_OG_AKTIVITET_OPPGAVE_V1_ENDPOINTURL")
+private val username: String? = getEnvVar("SRVDAGPENGER_OPPSLAG_USERNAME")
+private val password: String? = getEnvVar("SRVDAGPENGER_OPPSLAG_PASSWORD")
+private val oicdStsUrl: String? = getEnvVar("SECURITYTOKENSERVICE_URL")
+private val dagpengerPersonUrl: String? = getEnvVar("VIRKSOMHET_PERSON_V3_ENDPOINTURL")
+private val dagpengerArbeidsfordelingUrl: String? = getEnvVar("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
+private val dagpengerArenaOppgaveUrl: String? = getEnvVar("VIRKSOMHET_BEHANDLENDE_ARBEID_OG_AKTIVITET_OPPGAVE_V1_ENDPOINTURL")
+
+fun getEnvVar(varName: String, defaultValue: String? = null) =
+        System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
 
 class Oppslag {
     companion object {
