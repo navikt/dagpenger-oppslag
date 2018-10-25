@@ -28,7 +28,7 @@ private val LOGGER = KotlinLogging.logger {}
 
 private val username: String? = System.getenv("SRVDAGPENGER_OPPSLAG_USERNAME")
 private val password: String? = System.getenv("SRVDAGPENGER_OPPSLAG_PASSWORD")
-private val oicdStsUrl: String? = System.getenv("OIDC_STS_ISSUERURL")
+private val oicdStsUrl: String? = System.getenv("SECURITYTOKENSERVICE_URL")
 private val dagpengerPersonUrl: String? = System.getenv("VIRKSOMHET_PERSON_V3_ENDPOINTURL")
 private val dagpengerArbeidsfordelingUrl: String? = System.getenv("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
 private val dagpengerArenaOppgaveUrl: String? = System.getenv("VIRKSOMHET_BEHANDLENDE_ARBEID_OG_AKTIVITET_OPPGAVE_V1_ENDPOINTURL")
