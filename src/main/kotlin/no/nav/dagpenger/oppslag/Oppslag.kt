@@ -34,8 +34,11 @@ private val dagpengerArbeidsfordelingUrl: String? = System.getenv("DAGPENGER_ARB
 private val dagpengerArenaOppgaveUrl: String? = System.getenv("DAGPENGER_ARENA_OPPGAVE_URL")
 
 class Oppslag {
-    fun main(args: Array<String>) {
-        embeddedServer(Netty, port = 8080, module = Application::main).start(wait = true)
+    companion object {
+        @JvmStatic
+        fun main(args: Array<String>) {
+            embeddedServer(Netty, port = 8080, module = Application::main).start(wait = true)
+        }
     }
 }
 
