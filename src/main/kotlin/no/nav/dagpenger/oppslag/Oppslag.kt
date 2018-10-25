@@ -22,6 +22,13 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 
 private val LOGGER = KotlinLogging.logger {}
 
+private val username: String? = System.getenv("SRVDAGPENGER_OPPSLAG_USERNAME")
+private val password: String? = System.getenv("SRVDAGPENGER_OPPSLAG_PASSWORD")
+private val oicdStsUrl: String? = System.getenv("OIDC_STS_ISSUERURL")
+private val dagpengerPersonUrl: String? = System.getenv("DAGPENGER_PERSON_URL")
+private val dagpengerArbeidsfordelingUrl: String? = System.getenv("DAGPENGER_ARBEIDSFORDELING_URL")
+private val dagpengerArenaOppgaveUrl: String? = System.getenv("DAGPENGER_ARENA_OPPGAVE_URL")
+
 fun main(args: Array<String>) {
     embeddedServer(Netty, port = 8090, module = Application::main).start(wait = true)
 }
@@ -35,18 +42,16 @@ fun Application.main() {
         }
     }
 
-    val person = WsClient<PersonV3>("https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/Person_v3Port", PersonV3::class.java)
+    val person = WsClient<PersonV3>(oicdStsUrl, username, password)
+            .createPortForSystemUser(dagpengerPersonUrl, PersonV3::class.java)
     val personClient = PersonClientSoap(person)
 
-    val arbeidsfordeling = WsClient<ArbeidsfordelingV1>(
-            "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port", ArbeidsfordelingV1::class.java)
+    val arbeidsfordeling = WsClient<ArbeidsfordelingV1>(oicdStsUrl, username, password)
+            .createPortForSystemUser(dagpengerArbeidsfordelingUrl, ArbeidsfordelingV1::class.java)
     val arbeidsfordelingClient = ArbeidsfordelingClientSoap(arbeidsfordeling)
 
-    val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(
-            "https://localhost/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize", "user", "pwd")
-            .createPortForSystemUser("https://localhost/castlemock/mock/soap/project/rRm85C/BehandleArbeidOgAktivitetOppgave_v1Port", BehandleArbeidOgAktivitetOppgaveV1::class.java)
+    val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(oicdStsUrl, username, password)
+            .createPortForSystemUser(dagpengerArenaOppgaveUrl, BehandleArbeidOgAktivitetOppgaveV1::class.java)
     val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave)
 
     routing {
