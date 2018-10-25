@@ -33,7 +33,6 @@ private val dagpengerPersonUrl: String? = System.getenv("DAGPENGER_PERSON_URL")
 private val dagpengerArbeidsfordelingUrl: String? = System.getenv("DAGPENGER_ARBEIDSFORDELING_URL")
 private val dagpengerArenaOppgaveUrl: String? = System.getenv("DAGPENGER_ARENA_OPPGAVE_URL")
 
-
 class Oppslag {
     fun main(args: Array<String>) {
         embeddedServer(Netty, port = 8080, module = Application::main).start(wait = true)
