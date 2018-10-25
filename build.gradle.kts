@@ -35,7 +35,7 @@ application {
 }
 
 docker {
-    name = "repo.adeo.no:5443/navikt/${application.applicationName}"
+    name = "repo.adeo.no:5443/${application.applicationName}"
     buildArgs(mapOf(
             "APP_NAME" to application.applicationName,
             "DIST_TAR" to "${application.applicationName}-${project.version}"
