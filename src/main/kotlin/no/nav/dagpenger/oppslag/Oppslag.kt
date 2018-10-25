@@ -29,9 +29,9 @@ private val LOGGER = KotlinLogging.logger {}
 private val username: String? = System.getenv("SRVDAGPENGER_OPPSLAG_USERNAME")
 private val password: String? = System.getenv("SRVDAGPENGER_OPPSLAG_PASSWORD")
 private val oicdStsUrl: String? = System.getenv("OIDC_STS_ISSUERURL")
-private val dagpengerPersonUrl: String? = System.getenv("DAGPENGER_PERSON_URL")
-private val dagpengerArbeidsfordelingUrl: String? = System.getenv("DAGPENGER_ARBEIDSFORDELING_URL")
-private val dagpengerArenaOppgaveUrl: String? = System.getenv("DAGPENGER_ARENA_OPPGAVE_URL")
+private val dagpengerPersonUrl: String? = System.getenv("VIRKSOMHET_PERSON_V3_ENDPOINTURL")
+private val dagpengerArbeidsfordelingUrl: String? = System.getenv("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
+private val dagpengerArenaOppgaveUrl: String? = System.getenv("VIRKSOMHET_BEHANDLENDE_ARBEID_OG_AKTIVITET_OPPGAVE_V1_ENDPOINTURL")
 
 class Oppslag {
     companion object {
