@@ -15,8 +15,6 @@ prometheus:
   enabled: false
 fasitResources:
   used:
-  - alias: dagpenger-oppslag-properties
-    resourceType: applicationproperties
   - alias: srvdagpenger-oppslag
     resourceType: credential
   - alias: securityTokenService
