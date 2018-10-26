@@ -13,3 +13,17 @@ resources:
     memory: 256Mi
 prometheus:
   enabled: false
+fasitResources:
+  used:
+  - alias: dagpenger-oppslag-properties
+    resourceType: applicationproperties
+  - alias: srvdagpenger-oppslag
+    resourceType: credential
+  - alias: securityTokenService
+    resourceType: baseurl
+  - alias: virksomhet:Person_v3
+    resourceType: webserviceendpoint
+  - alias: virksomhet:Arbeidsfordeling_v1
+    resourceType: webserviceendpoint
+  - alias: virksomhet:BehandleArbeidOgAktivitetOppgave_v1
+    resourceType: webserviceendpoint
