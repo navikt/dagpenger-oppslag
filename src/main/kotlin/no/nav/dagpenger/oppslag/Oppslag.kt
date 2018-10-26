@@ -26,12 +26,12 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 
 private val LOGGER = KotlinLogging.logger {}
 
-private val username: String? = getEnvVar("SRVDAGPENGER_OPPSLAG_USERNAME")
-private val password: String? = getEnvVar("SRVDAGPENGER_OPPSLAG_PASSWORD")
-private val oicdStsUrl: String? = getEnvVar("SECURITYTOKENSERVICE_URL")
-private val dagpengerPersonUrl: String? = getEnvVar("VIRKSOMHET_PERSON_V3_ENDPOINTURL")
-private val dagpengerArbeidsfordelingUrl: String? = getEnvVar("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
-private val dagpengerArenaOppgaveUrl: String? = getEnvVar("VIRKSOMHET_BEHANDLENDE_ARBEID_OG_AKTIVITET_OPPGAVE_V1_ENDPOINTURL")
+private val username: String? = getEnvVar("SRVDAGPENGER_OPPSLAG_USERNAME", " ")
+private val password: String? = getEnvVar("SRVDAGPENGER_OPPSLAG_PASSWORD", " ")
+private val oicdStsUrl: String? = getEnvVar("SECURITYTOKENSERVICE_URL", "localhost")
+private val dagpengerPersonUrl: String? = getEnvVar("VIRKSOMHET_PERSON_V3_ENDPOINTURL", "localhost")
+private val dagpengerArbeidsfordelingUrl: String? = getEnvVar("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL", "localhost")
+private val dagpengerArenaOppgaveUrl: String? = getEnvVar("VIRKSOMHET_BEHANDLENDE_ARBEID_OG_AKTIVITET_OPPGAVE_V1_ENDPOINTURL", "localhost")
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
         System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
