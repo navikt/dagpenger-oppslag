@@ -1,5 +1,7 @@
 package no.nav.dagpenger.oppslag.arena
 
+import no.nav.arena.services.sakvedtakservice.Bruker
+import no.nav.arena.services.sakvedtakservice.SakVedtakPortType
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.binding.BehandleArbeidOgAktivitetOppgaveV1
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Oppgave
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Oppgavetype
@@ -10,8 +12,9 @@ import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.
 import java.util.Calendar
 import java.util.GregorianCalendar
 import javax.xml.datatype.DatatypeFactory
+import javax.xml.ws.Holder
 
-class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1) {
+class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hentsak: SakVedtakPortType) {
     fun bestillOppgave(behandlendeEnhetId: String, fødselsnummer: String): String {
         val request = BestillOppgaveRequest()
 
@@ -28,5 +31,17 @@ class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1) {
         val response: BestillOppgaveResponse = oppgaveV1.bestillOppgave(request)
 
         return response.arenaSakId
+    }
+
+    fun hentDagpengerSaker(fødselsnummer: String, brukerType: String) {
+        val bruker = Bruker().apply {
+            brukerId = fødselsnummer
+            brukertypeKode = brukerType
+        }
+
+        val brukerHolder = Holder<Bruker>()
+        brukerHolder.value = bruker
+
+        hentsak.hentSaksInfoListeV2(brukerHolder, null, null, null, "DAG", false, null)
     }
 }
