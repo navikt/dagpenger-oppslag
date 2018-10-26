@@ -25,3 +25,7 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: virksomhet:BehandleArbeidOgAktivitetOppgave_v1
     resourceType: webserviceendpoint
+  exposed:
+  - alias: dagpenger-oppslag-api
+    resourceType: restservice
+    path: /api
