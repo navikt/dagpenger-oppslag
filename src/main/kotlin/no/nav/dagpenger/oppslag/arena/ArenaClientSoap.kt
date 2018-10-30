@@ -1,12 +1,11 @@
 package no.nav.dagpenger.oppslag.arena
 
+import no.nav.arena.services.lib.sakvedtak.SaksInfo
+import no.nav.arena.services.lib.sakvedtak.SaksInfoListe
 import no.nav.arena.services.sakvedtakservice.Bruker
 import no.nav.arena.services.sakvedtakservice.SakVedtakPortType
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.binding.BehandleArbeidOgAktivitetOppgaveV1
-import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Oppgave
-import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Oppgavetype
-import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Person
-import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Tema
+import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.*
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.BestillOppgaveRequest
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.BestillOppgaveResponse
 import java.util.Calendar
@@ -22,6 +21,7 @@ class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hen
 
         request.oppgave = Oppgave().apply {
             tema = Tema().apply { value = "DAG" }
+            prioritet = Prioritet().apply { kodeRef = "2" } //TODO: sjekk
             bruker = Person().apply { ident = fødselsnummer }
             this.behandlendeEnhetId = behandlendeEnhetId
             //TODO: find out what to set as deadline/frist
@@ -33,15 +33,19 @@ class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hen
         return response.arenaSakId
     }
 
-    fun hentDagpengerSaker(fødselsnummer: String, brukerType: String) {
-        val bruker = Bruker().apply {
-            brukerId = fødselsnummer
-            brukertypeKode = brukerType
+    fun getDagpengerSaker(fødselsnummer: String, brukerType: String, includeClosedSaker: Boolean) : List<SaksInfo> {
+
+        val brukerHolder = Holder<Bruker>().apply {
+            value = Bruker().apply {
+                brukerId = fødselsnummer
+                brukertypeKode = brukerType
+            }
         }
 
-        val brukerHolder = Holder<Bruker>()
-        brukerHolder.value = bruker
+        val sakerHolder = Holder<SaksInfoListe>()
 
-        hentsak.hentSaksInfoListeV2(brukerHolder, null, null, null, "DAG", false, null)
+        hentsak.hentSaksInfoListeV2(brukerHolder, null, null, null, "DAG", includeClosedSaker, sakerHolder)
+
+        return sakerHolder.value.saksInfo
     }
 }
