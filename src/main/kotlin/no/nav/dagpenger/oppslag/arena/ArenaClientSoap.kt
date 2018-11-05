@@ -33,19 +33,19 @@ class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hen
         return response.arenaSakId
     }
 
-    fun getDagpengerSaker(fødselsnummer: String, brukerType: String, includeClosedSaker: Boolean) : List<SaksInfo> {
+    fun getDagpengerSaker(fødselsnummer: String, brukerType: String) : List<SaksInfo> {
 
-        val brukerHolder = Holder<Bruker>().apply {
+        val bruker = Holder<Bruker>().apply {
             value = Bruker().apply {
                 brukerId = fødselsnummer
                 brukertypeKode = brukerType
             }
         }
 
-        val sakerHolder = Holder<SaksInfoListe>()
+        val saker = Holder<SaksInfoListe>()
 
-        hentsak.hentSaksInfoListeV2(brukerHolder, null, null, null, "DAG", includeClosedSaker, sakerHolder)
+        hentsak.hentSaksInfoListeV2(bruker, null, null, null, "DAG", false, saker)
 
-        return sakerHolder.value.saksInfo
+        return saker.value.saksInfo
     }
 }

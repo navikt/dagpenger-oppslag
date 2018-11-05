@@ -23,7 +23,7 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
         val fødselsnummer = call.receive<String>()
 
         try {
-            val saker = arenaClient.getDagpengerSaker(fødselsnummer, "PERSON", false)
+            val saker = arenaClient.getDagpengerSaker(fødselsnummer, "PERSON")
 
             val newestActiveSak = findNewestActiveSak(saker)
 
