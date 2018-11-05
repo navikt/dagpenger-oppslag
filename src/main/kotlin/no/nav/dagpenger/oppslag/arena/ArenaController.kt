@@ -11,7 +11,7 @@ import no.nav.arena.services.lib.sakvedtak.SaksInfo
 import no.nav.arena.services.sakvedtakservice.FaultFeilIInputMsg
 
 fun Routing.arena(arenaClient: ArenaClientSoap) {
-    post("arena/opprettsak") {
+    post("api/arena/opprettsak") {
         val (behandlendeEnhetId, fødselsnummer) = call.receive<BestillArenaSakRequest>()
 
         val arenaSakId = arenaClient.bestillOppgave(behandlendeEnhetId, fødselsnummer)
@@ -19,7 +19,7 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
         call.respondText(arenaSakId)
     }
 
-    post("arena/finnsak") {
+    post("api/arena/finnsak") {
         val fødselsnummer = call.receive<String>()
 
         try {
