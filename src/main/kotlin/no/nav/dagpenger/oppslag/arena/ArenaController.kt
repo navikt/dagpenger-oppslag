@@ -12,15 +12,15 @@ import no.nav.arena.services.sakvedtakservice.FaultFeilIInputMsg
 
 fun Routing.arena(arenaClient: ArenaClientSoap) {
     post("api/arena/opprettsak") {
-        val (behandlendeEnhetId, fødselsnummer) = call.receive<BestillArenaSakRequest>()
+        val (behandlendeEnhetId, fødselsnummer) = call.receive<OpprettArenaSakRequest>()
 
-        val arenaSakId = arenaClient.bestillOppgave(behandlendeEnhetId, fødselsnummer)
+        val sakId = arenaClient.bestillOppgave(behandlendeEnhetId, fødselsnummer)
 
-        call.respondText(arenaSakId)
+        call.respond(ArenaSakResponse(sakId))
     }
 
     post("api/arena/finnsak") {
-        val fødselsnummer = call.receive<String>()
+        val (fødselsnummer) = call.receive<FinnArenaSakRequest>()
 
         try {
             val saker = arenaClient.getDagpengerSaker(fødselsnummer, "PERSON")
@@ -30,7 +30,7 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
             if (newestActiveSak == null) {
                 call.respond(HttpStatusCode.NotFound)
             } else {
-                call.respond(newestActiveSak.saksId)
+                call.respond(ArenaSakResponse(newestActiveSak.saksId))
             }
         } catch (inputException : FaultFeilIInputMsg) {
             call.respond(HttpStatusCode.BadRequest, inputException.faultInfo)
@@ -42,7 +42,15 @@ fun findNewestActiveSak(saker : List<SaksInfo>) : SaksInfo? {
     return saker.filter { it.sakstatus == "AKTIV" }.maxBy { it.sakOpprettet.toGregorianCalendar() }
 }
 
-data class BestillArenaSakRequest(
+data class OpprettArenaSakRequest(
     val behandlendeEnhetId: String,
     val fødselsnummer: String
+)
+
+data class FinnArenaSakRequest(
+        val fødselsnummer: String
+)
+
+data class ArenaSakResponse(
+    val arenaSakId: String
 )
