@@ -14,6 +14,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import mu.KotlinLogging
+import no.nav.arena.services.sakvedtakservice.SakVedtakPortType
 import no.nav.dagpenger.oppslag.arbeidsfordeling.ArbeidsfordelingClientSoap
 import no.nav.dagpenger.oppslag.arbeidsfordeling.arbeidsfordeling
 import no.nav.dagpenger.oppslag.arena.ArenaClientSoap
@@ -32,6 +33,7 @@ private val oicdStsUrl: String? = getEnvVar("SECURITYTOKENSERVICE_URL")
 private val dagpengerPersonUrl: String? = getEnvVar("VIRKSOMHET_PERSON_V3_ENDPOINTURL")
 private val dagpengerArbeidsfordelingUrl: String? = getEnvVar("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
 private val dagpengerArenaOppgaveUrl: String? = getEnvVar("VIRKSOMHET_BEHANDLEARBEIDOGAKTIVITETOPPGAVE_V1_ENDPOINTURL")
+private val dagpengerArenaHentSakerUrl: String? = getEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
         System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
@@ -65,7 +67,10 @@ fun Application.main() {
 
     val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(oicdStsUrl, username, password)
             .createPortForSystemUser(dagpengerArenaOppgaveUrl, BehandleArbeidOgAktivitetOppgaveV1::class.java)
-    val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave)
+
+    val hentSaksInfoListe = WsClient<SakVedtakPortType>(oicdStsUrl, username, password)
+            .createPortForSystemUser(dagpengerArenaHentSakerUrl, SakVedtakPortType::class.java)
+    val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave, hentSaksInfoListe)
 
     routing {
         person(personClient)
