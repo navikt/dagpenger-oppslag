@@ -21,7 +21,7 @@ class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hen
 
         request.oppgave = Oppgave().apply {
             tema = Tema().apply { value = "DAG" }
-            prioritet = Prioritet().apply { kodeRef = "2" } //TODO: sjekk
+            prioritet = Prioritet().apply { value = "HOY" }
             bruker = Person().apply { ident = fødselsnummer }
             this.behandlendeEnhetId = behandlendeEnhetId
             //TODO: find out what to set as deadline/frist
