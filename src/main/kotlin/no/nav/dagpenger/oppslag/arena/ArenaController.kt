@@ -10,16 +10,16 @@ import no.nav.arena.services.lib.sakvedtak.SaksInfo
 import no.nav.arena.services.sakvedtakservice.FaultFeilIInputMsg
 
 fun Routing.arena(arenaClient: ArenaClientSoap) {
-    post("api/arena/opprettsak") {
-        val (behandlendeEnhetId, fødselsnummer) = call.receive<OpprettArenaSakRequest>()
+    post("api/arena/createsak") {
+        val (behandlendeEnhetId, fødselsnummer) = call.receive<CreateArenaSakRequest>()
 
         val sakId = arenaClient.bestillOppgave(behandlendeEnhetId, fødselsnummer)
 
         call.respond(ArenaSakResponse(sakId))
     }
 
-    post("api/arena/finnsak") {
-        val (fødselsnummer) = call.receive<FinnArenaSakRequest>()
+    post("api/arena/findsak") {
+        val (fødselsnummer) = call.receive<FindArenaSakRequest>()
 
         try {
             val saker = arenaClient.getDagpengerSaker(fødselsnummer, "PERSON")
@@ -41,12 +41,12 @@ fun findNewestActiveSak(saker: List<SaksInfo>): SaksInfo? {
     return saker.filter { it.sakstatus == "AKTIV" }.maxBy { it.sakOpprettet.toGregorianCalendar() }
 }
 
-data class OpprettArenaSakRequest(
+data class CreateArenaSakRequest(
     val behandlendeEnhetId: String,
     val fødselsnummer: String
 )
 
-data class FinnArenaSakRequest(
+data class FindArenaSakRequest(
     val fødselsnummer: String
 )
 
