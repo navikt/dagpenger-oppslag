@@ -9,13 +9,14 @@ import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjo
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Oppgavetype
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Person
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Prioritet
+import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.SakInfo
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.informasjon.Tema
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.BestillOppgaveRequest
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.BestillOppgaveResponse
 import javax.xml.ws.Holder
 
 class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hentsak: SakVedtakPortType) {
-    fun bestillOppgave(behandlendeEnhetId: String, fødselsnummer: String): String {
+    fun createSak(behandlendeEnhetId: String, fødselsnummer: String): String {
         val request = BestillOppgaveRequest()
 
         request.oppgavetype = Oppgavetype().apply { value = "STARTVEDTAK" }
@@ -27,11 +28,37 @@ class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hen
             this.behandlendeEnhetId = behandlendeEnhetId
             // TODO: verify if frist is optional/has default value when creating sak in arena
             // frist = GregorianCalendar().let { DatatypeFactory.newInstance().newXMLGregorianCalendar(it) }
+            sakInfo = SakInfo().apply {
+                isTvingNySak = true
+            }
         }
 
         val response: BestillOppgaveResponse = oppgaveV1.bestillOppgave(request)
 
         return response.arenaSakId
+    }
+
+    fun createOppgave(behandlendeEnhetId: String, fødselsnummer: String, sakId: String): String {
+        val request = BestillOppgaveRequest()
+
+        request.oppgavetype = Oppgavetype().apply { value = "BEHENVPERSON" }
+
+        request.oppgave = Oppgave().apply {
+            tema = Tema().apply { value = "DAG" }
+            prioritet = Prioritet().apply { value = "HOY" }
+            bruker = Person().apply { ident = fødselsnummer }
+            this.behandlendeEnhetId = behandlendeEnhetId
+            // TODO: verify if frist is optional/has default value when creating sak in arena
+            // frist = GregorianCalendar().let { DatatypeFactory.newInstance().newXMLGregorianCalendar(it) }
+            sakInfo = SakInfo().apply {
+                arenaSakId = sakId
+                isTvingNySak = false
+            }
+        }
+
+        val response: BestillOppgaveResponse = oppgaveV1.bestillOppgave(request)
+
+        return response.oppgaveId
     }
 
     fun getDagpengerSaker(fødselsnummer: String, brukerType: String): List<SaksInfo> {

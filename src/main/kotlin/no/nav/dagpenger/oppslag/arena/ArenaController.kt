@@ -13,9 +13,17 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
     post("api/arena/createsak") {
         val (behandlendeEnhetId, fødselsnummer) = call.receive<CreateArenaSakRequest>()
 
-        val sakId = arenaClient.bestillOppgave(behandlendeEnhetId, fødselsnummer)
+        val sakId = arenaClient.createSak(behandlendeEnhetId, fødselsnummer)
 
-        call.respond(ArenaSakResponse(sakId))
+        call.respond(CreateArenaSakResponse(sakId))
+    }
+
+    post("api/arena/createoppgave") {
+        val (behandlendeEnhetId, fødselsnummer, sakId) = call.receive<CreateArenaOppgaveRequest>()
+
+        val oppgaveId = arenaClient.createOppgave(behandlendeEnhetId, fødselsnummer, sakId)
+
+        call.respond(CreateArenaOppgaveResponse(oppgaveId))
     }
 
     post("api/arena/findsak") {
@@ -29,7 +37,7 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
             if (newestActiveSak == null) {
                 call.respond(HttpStatusCode.NotFound)
             } else {
-                call.respond(ArenaSakResponse(newestActiveSak.saksId))
+                call.respond(FindArenaSakResponse(newestActiveSak.saksId))
             }
         } catch (inputException: FaultFeilIInputMsg) {
             call.respond(HttpStatusCode.BadRequest, inputException.faultInfo)
@@ -46,10 +54,24 @@ data class CreateArenaSakRequest(
     val fødselsnummer: String
 )
 
+data class CreateArenaSakResponse(
+    val sakId: String
+)
+
+data class CreateArenaOppgaveRequest(
+    val behandlendeEnhetId: String,
+    val fødselsnummer: String,
+    val sakId: String
+)
+
+data class CreateArenaOppgaveResponse(
+    val oppgaveId: String
+)
+
 data class FindArenaSakRequest(
     val fødselsnummer: String
 )
 
-data class ArenaSakResponse(
-    val arenaSakId: String
+data class FindArenaSakResponse(
+    val sakId: String
 )
