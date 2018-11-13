@@ -19,10 +19,13 @@ import no.nav.dagpenger.oppslag.arbeidsfordeling.ArbeidsfordelingClientSoap
 import no.nav.dagpenger.oppslag.arbeidsfordeling.arbeidsfordeling
 import no.nav.dagpenger.oppslag.arena.ArenaClientSoap
 import no.nav.dagpenger.oppslag.arena.arena
+import no.nav.dagpenger.oppslag.joark.JoarkClientSoap
+import no.nav.dagpenger.oppslag.joark.joark
 import no.nav.dagpenger.oppslag.person.PersonClientSoap
 import no.nav.dagpenger.oppslag.person.person
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.binding.BehandleArbeidOgAktivitetOppgaveV1
+import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 
 private val LOGGER = KotlinLogging.logger {}
@@ -34,6 +37,7 @@ private val dagpengerPersonUrl: String? = getEnvVar("VIRKSOMHET_PERSON_V3_ENDPOI
 private val dagpengerArbeidsfordelingUrl: String? = getEnvVar("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
 private val dagpengerArenaOppgaveUrl: String? = getEnvVar("VIRKSOMHET_BEHANDLEARBEIDOGAKTIVITETOPPGAVE_V1_ENDPOINTURL")
 private val dagpengerArenaHentSakerUrl: String? = getEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")
+private val dagpengerInngaaendeJournalUrl: String? = getEnvVar("BEHANDLEINNGAAENDEJOURNAL_V1_ENDPOINTURL")
 
 fun getEnvVar(varName: String, defaultValue: String? = null) =
         System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
@@ -72,10 +76,15 @@ fun Application.main() {
             .createPortForSystemUser(dagpengerArenaHentSakerUrl, SakVedtakPortType::class.java)
     val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave, hentSaksInfoListe)
 
+    val inngåendeJournal = WsClient<BehandleInngaaendeJournalV1>(oicdStsUrl, username, password)
+            .createPortForSystemUser(dagpengerInngaaendeJournalUrl, BehandleInngaaendeJournalV1::class.java)
+    val joarkClient = JoarkClientSoap(inngåendeJournal)
+
     routing {
         person(personClient)
         arbeidsfordeling(arbeidsfordelingClient)
         arena(arenaClient)
+        joark(joarkClient)
 
         get("/isAlive") {
             call.respondText("ALIVE", ContentType.Text.Plain)

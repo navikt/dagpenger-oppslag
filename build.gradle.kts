@@ -100,7 +100,12 @@ java {
 }
 
 val wsdlDir = "$projectDir/src/main/resources/wsdl"
-val wsdlsToGenerate = listOf("$wsdlDir/arena/Binding.wsdl", "$wsdlDir/person/Binding.wsdl", "$wsdlDir/arbeidsfordeling/Binding.wsdl", "$wsdlDir/hentsak/arenaSakVedtakService.wsdl")
+val wsdlsToGenerate = listOf(
+        "$wsdlDir/arena/Binding.wsdl",
+        "$wsdlDir/inngaaendejournal/Binding.wsdl",
+        "$wsdlDir/person/Binding.wsdl",
+        "$wsdlDir/arbeidsfordeling/Binding.wsdl",
+        "$wsdlDir/hentsak/arenaSakVedtakService.wsdl")
 val generatedDir = "$projectDir/build/generated-sources"
 
 tasks {
