@@ -4,7 +4,7 @@ import no.nav.arena.services.lib.sakvedtak.SaksInfo
 import no.nav.dagpenger.oppslag.arena.findNewestActiveSak
 import org.junit.Before
 import org.junit.Test
-import java.util.*
+import java.util.GregorianCalendar
 import javax.xml.datatype.DatatypeFactory
 import kotlin.test.assertEquals
 
