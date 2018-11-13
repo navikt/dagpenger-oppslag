@@ -30,24 +30,12 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 
 private val LOGGER = KotlinLogging.logger {}
 
-private val username: String? = getEnvVar("SRVDAGPENGER_OPPSLAG_USERNAME")
-private val password: String? = getEnvVar("SRVDAGPENGER_OPPSLAG_PASSWORD")
-private val oicdStsUrl: String? = getEnvVar("SECURITYTOKENSERVICE_URL")
-private val dagpengerPersonUrl: String? = getEnvVar("VIRKSOMHET_PERSON_V3_ENDPOINTURL")
-private val dagpengerArbeidsfordelingUrl: String? = getEnvVar("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
-private val dagpengerArenaOppgaveUrl: String? = getEnvVar("VIRKSOMHET_BEHANDLEARBEIDOGAKTIVITETOPPGAVE_V1_ENDPOINTURL")
-private val dagpengerArenaHentSakerUrl: String? = getEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")
-private val dagpengerInngaaendeJournalUrl: String? = getEnvVar("BEHANDLEINNGAAENDEJOURNAL_V1_ENDPOINTURL")
-
-fun getEnvVar(varName: String, defaultValue: String? = null) =
-        System.getenv(varName) ?: defaultValue ?: throw RuntimeException("Missing required variable \"$varName\"")
-
 class Oppslag {
-
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            embeddedServer(Netty, port = 8080, module = Application::main).start(wait = true)
+            val env = Environment()
+            embeddedServer(Netty, port = env.httpPort, module = Application::main).start(wait = true)
         }
     }
 }
@@ -60,24 +48,25 @@ fun Application.main() {
             setPrettyPrinting()
         }
     }
+    val env = Environment()
 
-    val person = WsClient<PersonV3>(oicdStsUrl, username, password)
-            .createPortForSystemUser(dagpengerPersonUrl, PersonV3::class.java)
+    val person = WsClient<PersonV3>(env.oicdStsUrl, env.username, env.password)
+            .createPortForSystemUser(env.dagpengerPersonUrl, PersonV3::class.java)
     val personClient = PersonClientSoap(person)
 
-    val arbeidsfordeling = WsClient<ArbeidsfordelingV1>(oicdStsUrl, username, password)
-            .createPortForSystemUser(dagpengerArbeidsfordelingUrl, ArbeidsfordelingV1::class.java)
+    val arbeidsfordeling = WsClient<ArbeidsfordelingV1>(env.oicdStsUrl, env.username, env.password)
+            .createPortForSystemUser(env.dagpengerArbeidsfordelingUrl, ArbeidsfordelingV1::class.java)
     val arbeidsfordelingClient = ArbeidsfordelingClientSoap(arbeidsfordeling)
 
-    val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(oicdStsUrl, username, password)
-            .createPortForSystemUser(dagpengerArenaOppgaveUrl, BehandleArbeidOgAktivitetOppgaveV1::class.java)
+    val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(env.oicdStsUrl, env.username, env.password)
+            .createPortForSystemUser(env.dagpengerArenaOppgaveUrl, BehandleArbeidOgAktivitetOppgaveV1::class.java)
 
-    val hentSaksInfoListe = WsClient<SakVedtakPortType>(oicdStsUrl, username, password)
-            .createPortForSystemUser(dagpengerArenaHentSakerUrl, SakVedtakPortType::class.java)
+    val hentSaksInfoListe = WsClient<SakVedtakPortType>(env.oicdStsUrl, env.username, env.password)
+            .createPortForSystemUser(env.dagpengerArenaHentSakerUrl, SakVedtakPortType::class.java)
     val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave, hentSaksInfoListe)
 
-    val inngåendeJournal = WsClient<BehandleInngaaendeJournalV1>(oicdStsUrl, username, password)
-            .createPortForSystemUser(dagpengerInngaaendeJournalUrl, BehandleInngaaendeJournalV1::class.java)
+    val inngåendeJournal = WsClient<BehandleInngaaendeJournalV1>(env.oicdStsUrl, env.username, env.password)
+            .createPortForSystemUser(env.dagpengerInngaaendeJournalUrl, BehandleInngaaendeJournalV1::class.java)
     val joarkClient = JoarkClientSoap(inngåendeJournal)
 
     routing {
