@@ -10,27 +10,20 @@ import no.nav.arena.services.lib.sakvedtak.SaksInfo
 import no.nav.arena.services.sakvedtakservice.FaultFeilIInputMsg
 
 fun Routing.arena(arenaClient: ArenaClientSoap) {
-    post("api/arena/createsak") {
-        val (behandlendeEnhetId, fødselsnummer) = call.receive<CreateArenaSakRequest>()
-
-        val sakId = arenaClient.createSak(behandlendeEnhetId, fødselsnummer)
-
-        call.respond(CreateArenaSakResponse(sakId))
-    }
 
     post("api/arena/createoppgave") {
-        val (behandlendeEnhetId, fødselsnummer, sakId) = call.receive<CreateArenaOppgaveRequest>()
+        val createArenaOppgaveRequest = call.receive<CreateArenaOppgaveRequest>()
 
-        val oppgaveId = arenaClient.createOppgave(behandlendeEnhetId, fødselsnummer, sakId)
+        val sakId = arenaClient.createOppgave(createArenaOppgaveRequest)
 
-        call.respond(CreateArenaOppgaveResponse(oppgaveId))
+        call.respond(CreateArenaOppgaveResponse(sakId))
     }
 
     post("api/arena/findsak") {
-        val (fødselsnummer) = call.receive<FindArenaSakRequest>()
+        val findArenaSakRequest = call.receive<FindArenaSakRequest>()
 
         try {
-            val saker = arenaClient.getDagpengerSaker(fødselsnummer, "PERSON")
+            val saker = arenaClient.getDagpengerSaker(findArenaSakRequest)
 
             val newestActiveSak = findNewestActiveSak(saker)
 
@@ -44,32 +37,29 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
         }
     }
 }
-
+// TODO: flytt?
 fun findNewestActiveSak(saker: List<SaksInfo>): SaksInfo? {
     return saker.filter { it.sakstatus == "AKTIV" }.maxBy { it.sakOpprettet.toGregorianCalendar() }
 }
 
-data class CreateArenaSakRequest(
-    val behandlendeEnhetId: String,
-    val fødselsnummer: String
-)
-
-data class CreateArenaSakResponse(
-    val sakId: String
-)
-
 data class CreateArenaOppgaveRequest(
     val behandlendeEnhetId: String,
     val fødselsnummer: String,
-    val sakId: String
+    val sakId: String?,
+    val oppgaveType: String,
+    val tema: String,
+    val prioritet: String,
+    val tvingNySak: Boolean
 )
 
 data class CreateArenaOppgaveResponse(
-    val oppgaveId: String
+    val sakId: String
 )
 
 data class FindArenaSakRequest(
-    val fødselsnummer: String
+    val fødselsnummer: String,
+    val brukerType: String,
+    val tema: String
 )
 
 data class FindArenaSakResponse(
