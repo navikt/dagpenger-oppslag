@@ -6,8 +6,8 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.post
-import no.nav.arena.services.lib.sakvedtak.SaksInfo
 import no.nav.arena.services.sakvedtakservice.FaultFeilIInputMsg
+import java.util.Date
 
 fun Routing.arena(arenaClient: ArenaClientSoap) {
 
@@ -24,7 +24,9 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
 
         try {
             val saker = arenaClient.getDagpengerSaker(findArenaSakRequest)
-            call.respond(saker)
+                .map { sak -> ArenaSak(sak.saksId, sak.sakstatus, sak.sakOpprettet.toGregorianCalendar().time) }
+
+            call.respond(GetArenaSakerResponse(saker))
         } catch (inputException: FaultFeilIInputMsg) {
             call.respond(HttpStatusCode.BadRequest, inputException.faultInfo)
         }
@@ -52,6 +54,8 @@ data class GetArenaSakerRequest(
     val includeInactive: Boolean
 )
 
+data class ArenaSak(val sakId: String, val sakstatus: String, val opprettet: Date)
+
 data class GetArenaSakerResponse(
-    val saker: List<SaksInfo>
+    val saker: List<ArenaSak>
 )

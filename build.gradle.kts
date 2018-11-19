@@ -77,6 +77,7 @@ dependencies {
 
     implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
     implementation("com.squareup.moshi:moshi:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     compile("com.squareup.okio:okio:2.1.0")
     compile("com.ryanharter.ktor:ktor-moshi:1.0.0")
 

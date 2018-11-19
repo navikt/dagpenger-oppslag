@@ -1,6 +1,7 @@
 package no.nav.dagpenger.oppslag
 
 import com.ryanharter.ktor.moshi.moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -25,6 +26,7 @@ import no.nav.dagpenger.oppslag.person.person
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.binding.BehandleArbeidOgAktivitetOppgaveV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
+import java.util.Date
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -55,6 +57,7 @@ fun Application.main() {
     install(ContentNegotiation) {
         moshi {
             add(KotlinJsonAdapterFactory())
+            add(Date::class.java, Rfc3339DateJsonAdapter())
         }
     }
 
