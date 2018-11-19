@@ -38,18 +38,18 @@ class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hen
         return response.arenaSakId
     }
 
-    fun getDagpengerSaker(findArenaSakRequest: FindArenaSakRequest): List<SaksInfo> {
+    fun getDagpengerSaker(getArenaSakerRequest: GetArenaSakerRequest): List<SaksInfo> {
 
         val bruker = Holder<Bruker>().apply {
             value = Bruker().apply {
-                brukerId = findArenaSakRequest.fødselsnummer
-                brukertypeKode = findArenaSakRequest.brukerType
+                brukerId = getArenaSakerRequest.fødselsnummer
+                brukertypeKode = getArenaSakerRequest.brukerType
             }
         }
 
         val saker = Holder<SaksInfoListe>()
 
-        hentsak.hentSaksInfoListeV2(bruker, null, null, null, findArenaSakRequest.tema, false, saker)
+        hentsak.hentSaksInfoListeV2(bruker, null, null, null, getArenaSakerRequest.tema, getArenaSakerRequest.includeInactive, saker)
 
         return saker.value.saksInfo
     }

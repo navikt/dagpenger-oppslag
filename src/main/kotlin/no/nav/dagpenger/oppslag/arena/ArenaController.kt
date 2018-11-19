@@ -19,27 +19,16 @@ fun Routing.arena(arenaClient: ArenaClientSoap) {
         call.respond(CreateArenaOppgaveResponse(sakId))
     }
 
-    post("api/arena/findsak") {
-        val findArenaSakRequest = call.receive<FindArenaSakRequest>()
+    post("api/arena/getsaker") {
+        val findArenaSakRequest = call.receive<GetArenaSakerRequest>()
 
         try {
             val saker = arenaClient.getDagpengerSaker(findArenaSakRequest)
-
-            val newestActiveSak = findNewestActiveSak(saker)
-
-            if (newestActiveSak == null) {
-                call.respond(HttpStatusCode.NotFound)
-            } else {
-                call.respond(FindArenaSakResponse(newestActiveSak.saksId))
-            }
+            call.respond(saker)
         } catch (inputException: FaultFeilIInputMsg) {
             call.respond(HttpStatusCode.BadRequest, inputException.faultInfo)
         }
     }
-}
-// TODO: flytt?
-fun findNewestActiveSak(saker: List<SaksInfo>): SaksInfo? {
-    return saker.filter { it.sakstatus == "AKTIV" }.maxBy { it.sakOpprettet.toGregorianCalendar() }
 }
 
 data class CreateArenaOppgaveRequest(
@@ -56,12 +45,13 @@ data class CreateArenaOppgaveResponse(
     val sakId: String
 )
 
-data class FindArenaSakRequest(
+data class GetArenaSakerRequest(
     val fødselsnummer: String,
     val brukerType: String,
-    val tema: String
+    val tema: String,
+    val includeInactive: Boolean
 )
 
-data class FindArenaSakResponse(
-    val sakId: String
+data class GetArenaSakerResponse(
+    val saker: List<SaksInfo>
 )
