@@ -1,12 +1,13 @@
 package no.nav.dagpenger.oppslag
 
+import com.ryanharter.ktor.moshi.moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
-import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import io.ktor.routing.get
@@ -52,8 +53,8 @@ fun Application.main() {
     install(DefaultHeaders)
     install(CallLogging)
     install(ContentNegotiation) {
-        gson {
-            setPrettyPrinting()
+        moshi {
+            add(KotlinJsonAdapterFactory())
         }
     }
 

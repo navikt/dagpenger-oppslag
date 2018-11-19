@@ -56,6 +56,7 @@ val confluentVersion = "4.1.2"
 val kafkaVersion = "2.0.0"
 val ktorVersion = "0.9.5"
 val cxfVersion = "3.2.6"
+val moshiVersion = "1.8.0"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -73,7 +74,11 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:1.6.1")
 
     compile("io.ktor:ktor-server-netty:$ktorVersion")
-    compile("io.ktor:ktor-gson:$ktorVersion")
+
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+    implementation("com.squareup.moshi:moshi:$moshiVersion")
+    compile("com.squareup.okio:okio:2.1.0")
+    compile("com.ryanharter.ktor:ktor-moshi:1.0.0")
 
     implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
     implementation("javax.xml.ws:jaxws-api:2.3.1")
