@@ -8,10 +8,12 @@ import io.ktor.routing.post
 
 fun Routing.joark(joarkClient: JoarkClientSoap) {
     post("api/joark/ferdigstill") {
-        val journalpostId = call.receive<String>()
+        val request = call.receive<JoarkFerdigstillRequest>()
 
-        val response = joarkClient.ferdigstillJournalføring(journalpostId)
+        val response = joarkClient.ferdigstillJournalføring(request.journalpostId)
 
         call.respond(response)
     }
 }
+
+data class JoarkFerdigstillRequest(val journalpostId: String)
