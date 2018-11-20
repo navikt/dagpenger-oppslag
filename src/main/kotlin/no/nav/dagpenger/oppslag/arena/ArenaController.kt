@@ -1,5 +1,6 @@
 package no.nav.dagpenger.oppslag.arena
 
+import com.squareup.moshi.JsonDataException
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
@@ -12,23 +13,29 @@ import java.util.Date
 fun Routing.arena(arenaClient: ArenaClientSoap) {
 
     post("api/arena/createoppgave") {
-        val createArenaOppgaveRequest = call.receive<CreateArenaOppgaveRequest>()
+        try {
+            val createArenaOppgaveRequest = call.receive<CreateArenaOppgaveRequest>()
 
-        val sakId = arenaClient.createOppgave(createArenaOppgaveRequest)
+            val sakId = arenaClient.createOppgave(createArenaOppgaveRequest)
 
-        call.respond(CreateArenaOppgaveResponse(sakId))
+            call.respond(CreateArenaOppgaveResponse(sakId))
+        } catch (jsonException: JsonDataException) {
+            call.respond(HttpStatusCode.BadRequest, jsonException.message ?: "")
+        }
     }
 
     post("api/arena/getsaker") {
-        val findArenaSakRequest = call.receive<GetArenaSakerRequest>()
-
         try {
+            val findArenaSakRequest = call.receive<GetArenaSakerRequest>()
+
             val saker = arenaClient.getDagpengerSaker(findArenaSakRequest)
                 .map { sak -> ArenaSak(sak.saksId, sak.sakstatus, sak.sakOpprettet.toGregorianCalendar().time) }
 
             call.respond(GetArenaSakerResponse(saker))
         } catch (inputException: FaultFeilIInputMsg) {
             call.respond(HttpStatusCode.BadRequest, inputException.faultInfo)
+        } catch (jsonException: JsonDataException) {
+            call.respond(HttpStatusCode.BadRequest, jsonException.message ?: "")
         }
     }
 }
