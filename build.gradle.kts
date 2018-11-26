@@ -19,6 +19,7 @@ apply {
 }
 
 repositories {
+    mavenCentral()
     maven("https://repo.adeo.no/repository/maven-central")
     maven("https://dl.bintray.com/kotlin/ktor/")
     maven("https://dl.bintray.com/kotlin/kotlinx")
