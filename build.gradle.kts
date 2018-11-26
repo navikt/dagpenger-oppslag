@@ -7,12 +7,6 @@ plugins {
     id("com.adarshr.test-logger") version "1.5.0"
 }
 
-buildscript {
-    repositories {
-        maven("https://repo.adeo.no/repository/maven-central")
-    }
-}
-
 apply {
     plugin("com.diffplug.gradle.spotless")
     plugin("com.adarshr.test-logger")
@@ -20,7 +14,6 @@ apply {
 
 repositories {
     mavenCentral()
-    maven("https://repo.adeo.no/repository/maven-central")
     maven("https://dl.bintray.com/kotlin/ktor/")
     maven("https://dl.bintray.com/kotlin/kotlinx")
     maven("https://dl.bintray.com/kittinunf/maven")
