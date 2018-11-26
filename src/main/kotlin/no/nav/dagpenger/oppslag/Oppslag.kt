@@ -1,12 +1,14 @@
 package no.nav.dagpenger.oppslag
 
+import com.ryanharter.ktor.moshi.moshi
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
-import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
 import io.ktor.routing.get
@@ -27,6 +29,7 @@ import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.binding.BehandleArbeidOgAktivitetOppgaveV1
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
+import java.util.Date
 
 private val LOGGER = KotlinLogging.logger {}
 
@@ -44,8 +47,9 @@ fun Application.main() {
     install(DefaultHeaders)
     install(CallLogging)
     install(ContentNegotiation) {
-        gson {
-            setPrettyPrinting()
+        moshi {
+            add(KotlinJsonAdapterFactory())
+            add(Date::class.java, Rfc3339DateJsonAdapter())
         }
     }
     val env = Environment()
