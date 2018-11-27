@@ -1,17 +1,16 @@
-package no.nav.dagpenger.oppslag.arena
+package no.nav.dagpenger.oppslag.ws.arena
 
 import com.squareup.moshi.JsonDataException
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.routing.Routing
+import io.ktor.routing.Route
 import io.ktor.routing.post
 import no.nav.arena.services.sakvedtakservice.FaultFeilIInputMsg
 import java.util.Date
 
-fun Routing.arena(arenaClient: ArenaClientSoap) {
-
+fun Route.arena(arenaClient: ArenaClientSoap) {
     post("api/arena/createoppgave") {
         try {
             val createArenaOppgaveRequest = call.receive<CreateArenaOppgaveRequest>()

@@ -1,4 +1,4 @@
-package no.nav.dagpenger.oppslag.arena
+package no.nav.dagpenger.oppslag.ws.arena
 
 import no.nav.arena.services.lib.sakvedtak.SaksInfo
 import no.nav.arena.services.lib.sakvedtak.SaksInfoListe
@@ -15,7 +15,7 @@ import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.
 import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.meldinger.BestillOppgaveResponse
 import javax.xml.ws.Holder
 
-class ArenaClientSoap(val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, val hentsak: SakVedtakPortType) {
+class ArenaClientSoap(private val oppgaveV1: BehandleArbeidOgAktivitetOppgaveV1, private val hentsak: SakVedtakPortType) {
     fun createOppgave(arenaOppgaveRequest: CreateArenaOppgaveRequest): String {
         val soapRequest = BestillOppgaveRequest()
 

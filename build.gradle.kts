@@ -44,44 +44,46 @@ docker {
     tags(project.version.toString())
 }
 
-val kotlinLoggingVersion = "1.4.9"
-val fuelVersion = "1.15.0"
 val confluentVersion = "4.1.2"
-val kafkaVersion = "2.0.0"
-val ktorVersion = "1.0.0"
 val cxfVersion = "3.2.6"
+val fuelVersion = "1.15.0"
+val kafkaVersion = "2.0.0"
+val kotlinLoggingVersion = "1.4.9"
+val ktorVersion = "1.0.0"
 val moshiVersion = "1.8.0"
+val prometheusVersion = "0.5.0"
 
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
-    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
     implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
-
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-transports-http-jetty:$cxfVersion")
-
-    implementation("org.slf4j:slf4j-simple:1.6.1")
-
-    compile("io.ktor:ktor-server-netty:$ktorVersion")
-
+    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
+    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
     implementation("com.squareup.moshi:moshi:$moshiVersion")
-    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
-    compile("com.squareup.okio:okio:2.1.0")
-    compile("com.ryanharter.ktor:ktor-moshi:1.0.0")
-
     implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
+    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
+    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("javax.xml.ws:jaxws-api:2.3.1")
+    implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-transports-http-jetty:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    implementation("org.slf4j:slf4j-simple:1.6.1")
 
+
+    compile("io.ktor:ktor-server-netty:$ktorVersion")
+    compile("io.ktor:ktor-auth-jwt:$ktorVersion")
+    compile("com.ryanharter.ktor:ktor-moshi:1.0.0")
+    compile("com.squareup.okio:okio:2.1.0")
+    compile("io.ktor:ktor-server-netty:$ktorVersion")
+
+    testImplementation("com.github.tomakehurst:wiremock:2.19.0")
+    testImplementation("junit:junit:4.12")
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
-    testImplementation("junit:junit:4.12")
-    testImplementation("com.github.tomakehurst:wiremock:2.19.0")
 }
 
 spotless {

@@ -1,4 +1,4 @@
-package no.nav.dagpenger.oppslag.arbeidsfordeling
+package no.nav.dagpenger.oppslag.ws.arbeidsfordeling
 
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.ArbeidsfordelingKriterier
