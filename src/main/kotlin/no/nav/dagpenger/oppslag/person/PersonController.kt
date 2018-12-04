@@ -8,10 +8,12 @@ import io.ktor.routing.post
 
 fun Routing.person(personClient: PersonClientSoap) {
     post("api/person/geografisk-tilknytning") {
-        val fødselsnummer = call.receive<String>()
+        val request = call.receive<GeografiskTilknytningRequest>()
 
-        val geografiskTilknytningResponse = personClient.getGeografiskTilknytning(fødselsnummer)
+        val geografiskTilknytningResponse = personClient.getGeografiskTilknytning(request.fødselsnummer)
 
         call.respond(geografiskTilknytningResponse)
     }
 }
+
+data class GeografiskTilknytningRequest(val fødselsnummer: String)

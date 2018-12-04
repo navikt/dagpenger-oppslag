@@ -8,7 +8,7 @@ import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeE
 
 class ArbeidsfordelingClientSoap(private val arbeidsFordeling: ArbeidsfordelingV1) {
 
-    fun getBehandlendeEnhet(geografiskTilknytning: String, diskresjonskode: String?): String? {
+    fun getBehandlendeEnhet(geografiskTilknytning: String, diskresjonskode: String?): String {
         val request = FinnBehandlendeEnhetListeRequest()
 
         request.arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
@@ -21,6 +21,8 @@ class ArbeidsfordelingClientSoap(private val arbeidsFordeling: ArbeidsfordelingV
         val response = arbeidsFordeling.finnBehandlendeEnhetListe(request)
         val behandlendeEnhet = response.behandlendeEnhetListe.minBy { it.enhetId }
 
-        return behandlendeEnhet?.enhetId
+        return behandlendeEnhet?.enhetId ?: throw ArbeidsfordelingException("Missing enhetId")
     }
 }
+
+class ArbeidsfordelingException(override val message: String) : RuntimeException(message)

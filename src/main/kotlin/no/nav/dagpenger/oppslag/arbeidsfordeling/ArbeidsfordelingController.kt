@@ -15,11 +15,14 @@ fun Routing.arbeidsfordeling(arbeidsfordelingClient: ArbeidsfordelingClientSoap)
                 geografiskTilknytning,
                 diskresjonskode)
 
-        call.respond(behandlendeEnhet ?: "")
+        call.respond(BehandlendeEnhetResponse(behandlendeEnhet))
     }
 }
 
 data class BehandlendeEnhetRequest(
-    val geografiskTilknytning: String,
-    val diskresjonskode: String?
+        val geografiskTilknytning: String,
+        val diskresjonskode: String?
 )
+
+data class BehandlendeEnhetResponse(val behandlendeEnhet: String)
+
