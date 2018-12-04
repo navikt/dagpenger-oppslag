@@ -71,7 +71,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi:$moshiVersion")
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
     compile("com.squareup.okio:okio:2.1.0")
-    compile("com.ryanharter.ktor:ktor-moshi:1.0.0")
+    compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
 
     implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
     implementation("javax.xml.ws:jaxws-api:2.3.1")
