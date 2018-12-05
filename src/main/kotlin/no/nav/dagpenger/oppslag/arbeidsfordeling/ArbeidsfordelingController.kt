@@ -20,9 +20,8 @@ fun Routing.arbeidsfordeling(arbeidsfordelingClient: ArbeidsfordelingClientSoap)
 }
 
 data class BehandlendeEnhetRequest(
-        val geografiskTilknytning: String,
-        val diskresjonskode: String?
+    val geografiskTilknytning: String,
+    val diskresjonskode: String?
 )
 
 data class BehandlendeEnhetResponse(val behandlendeEnhet: String)
-
