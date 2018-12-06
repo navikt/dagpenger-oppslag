@@ -5,21 +5,24 @@ import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Arbeidsfordeli
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Diskresjonskoder
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Geografi
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Organisasjonsenhet
+import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.informasjon.Tema
 import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.meldinger.FinnBehandlendeEnhetListeRequest
 
 class ArbeidsfordelingClientSoap(private val arbeidsFordeling: ArbeidsfordelingV1) {
 
-    fun getBehandlendeEnhet(geografiskTilknytning: String, diskresjonskode: String?): List<Organisasjonsenhet> {
-        val request = FinnBehandlendeEnhetListeRequest()
+    fun getBehandlendeEnhet(incomingRequest: BehandlendeEnhetRequest): List<Organisasjonsenhet> {
+        val soapRequest = FinnBehandlendeEnhetListeRequest()
 
-        request.arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
-            diskresjonskode?.let {
-                this.diskresjonskode = Diskresjonskoder().apply { value = diskresjonskode }
+        soapRequest.arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
+            this.geografiskTilknytning = Geografi().apply { value = incomingRequest.geografiskTilknytning }
+            this.tema = Tema().apply { value = incomingRequest.tema }
+
+            incomingRequest.diskresjonskode?.let {
+                this.diskresjonskode = Diskresjonskoder().apply { value = incomingRequest.diskresjonskode }
             }
-            this.geografiskTilknytning = Geografi().apply { value = geografiskTilknytning }
         }
 
-        val response = arbeidsFordeling.finnBehandlendeEnhetListe(request)
+        val response = arbeidsFordeling.finnBehandlendeEnhetListe(soapRequest)
 
         return response.behandlendeEnhetListe
     }
