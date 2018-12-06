@@ -11,11 +11,11 @@ fun Routing.arbeidsfordeling(arbeidsfordelingClient: ArbeidsfordelingClientSoap)
     post("api/arbeidsfordeling/behandlende-enhet") {
         val (geografiskTilknytning, diskresjonskode ) = call.receive<BehandlendeEnhetRequest>()
 
-        val behandlendeEnhet = arbeidsfordelingClient.getBehandlendeEnhet(
+        val behandlendeEnheter = arbeidsfordelingClient.getBehandlendeEnhet(
                 geografiskTilknytning,
-                diskresjonskode)
+                diskresjonskode).map { it -> BehandlendeEnhet(it.enhetId, it.enhetNavn) }
 
-        call.respond(BehandlendeEnhetResponse(behandlendeEnhet))
+        call.respond(BehandlendeEnhetResponse(behandlendeEnheter))
     }
 }
 
@@ -24,4 +24,9 @@ data class BehandlendeEnhetRequest(
     val diskresjonskode: String?
 )
 
-data class BehandlendeEnhetResponse(val behandlendeEnhet: String)
+data class BehandlendeEnhet(
+    var enhetId: String,
+    var enhetNavn: String
+)
+
+data class BehandlendeEnhetResponse(val behandlendeEnheter: List<BehandlendeEnhet>)
