@@ -14,9 +14,9 @@ class ArbeidsfordelingClientSoap(private val arbeidsFordeling: ArbeidsfordelingV
 
         request.arbeidsfordelingKriterier = ArbeidsfordelingKriterier().apply {
             diskresjonskode?.let {
-                this.diskresjonskode = Diskresjonskoder().apply { kodeverksRef = diskresjonskode }
+                this.diskresjonskode = Diskresjonskoder().apply { value = diskresjonskode }
             }
-            this.geografiskTilknytning = Geografi().apply { kodeverksRef = geografiskTilknytning }
+            this.geografiskTilknytning = Geografi().apply { value = geografiskTilknytning }
         }
 
         val response = arbeidsFordeling.finnBehandlendeEnhetListe(request)
