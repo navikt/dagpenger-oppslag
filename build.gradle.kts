@@ -49,6 +49,7 @@ val kafkaVersion = "2.0.0"
 val ktorVersion = "1.0.0"
 val cxfVersion = "3.2.6"
 val moshiVersion = "1.8.0"
+val log4j2Version = "2.11.1"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -76,6 +77,11 @@ dependencies {
     implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
     implementation("javax.xml.ws:jaxws-api:2.3.1")
 
+    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
+    implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
+    
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit"))
     testImplementation("junit:junit:4.12")
