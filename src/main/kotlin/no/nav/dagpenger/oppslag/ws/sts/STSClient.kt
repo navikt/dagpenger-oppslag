@@ -1,5 +1,6 @@
-package no.nav.dagpenger.oppslag.ws.sts
+package no.nav.helse.ws.sts
 
+import org.apache.cxf.Bus
 import org.apache.cxf.BusFactory
 import org.apache.cxf.binding.soap.Soap12
 import org.apache.cxf.binding.soap.SoapMessage
@@ -13,11 +14,13 @@ import org.apache.cxf.ws.security.SecurityConstants
 import org.apache.cxf.ws.security.trust.STSClient
 import org.apache.neethi.Policy
 
-const val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:ws/untPolicy.xml"
-const val STS_SAML_POLICY = "classpath:ws/requestSamlPolicy.xml"
+val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:ws/untPolicy.xml"
+val STS_SAML_POLICY = "classpath:ws/requestSamlPolicy.xml"
+val STS_SAML_POLICY_NO_TRANSPORT_BINDING = "classpath:ws/requestSamlPolicyNoTransportBinding.xml";
 
 fun stsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
-    return STSClient(BusFactory.getDefaultBus()).apply {
+    val bus = BusFactory.getDefaultBus()
+    return STSClient(bus).apply {
         isEnableAppliesTo = false
         isAllowRenewing = false
 
@@ -29,33 +32,34 @@ fun stsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
             SecurityConstants.PASSWORD to credentials.second
         )
 
-        setPolicy(STS_CLIENT_AUTHENTICATION_POLICY)
+        setPolicy(bus.resolvePolicy(STS_CLIENT_AUTHENTICATION_POLICY))
     }
 }
 
 fun STSClient.configureFor(servicePort: Any) {
+    configureFor(servicePort, STS_SAML_POLICY)
+}
+
+fun STSClient.configureFor(servicePort: Any, policyUri: String) {
     val client = ClientProxy.getClient(servicePort)
-    client.configureSTS(this)
+    client.configureSTS(this, policyUri)
 }
 
 fun Client.configureSTS(stsClient: STSClient, policyUri: String = STS_SAML_POLICY) {
     requestContext[SecurityConstants.STS_CLIENT] = stsClient
     requestContext[SecurityConstants.CACHE_ISSUED_TOKEN_IN_ENDPOINT] = true
 
-    setClientEndpointPolicy(resolvePolicy(policyUri))
+    setClientEndpointPolicy(bus.resolvePolicy(policyUri))
 }
 
-fun STSClient.addSAMLTokenOnBehalfOfOidcToken(
-    onBehalfOfOutInterceptor: OnBehalfOfOutInterceptor
-) {
-    outInterceptors.add(onBehalfOfOutInterceptor)
-    requestContext[SecurityConstants.CACHE_ISSUED_TOKEN_IN_ENDPOINT] = false
-}
+private fun Bus.resolvePolicy(policyUri: String): Policy {
+    val registry = getExtension(PolicyEngine::class.java).registry
+    val resolved = registry.lookup(policyUri)
 
-private fun Client.resolvePolicy(policyUri: String): Policy {
-    val policyBuilder = bus.getExtension(PolicyBuilder::class.java)
+    val policyBuilder = getExtension(PolicyBuilder::class.java)
     val referenceResolver = RemoteReferenceResolver("", policyBuilder)
-    return referenceResolver.resolveReference(policyUri)
+
+    return resolved ?: referenceResolver.resolveReference(policyUri)
 }
 
 private fun Client.setClientEndpointPolicy(policy: Policy) {

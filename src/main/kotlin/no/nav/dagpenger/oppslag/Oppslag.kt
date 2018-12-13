@@ -1,14 +1,15 @@
 package no.nav.dagpenger.oppslag
 
+import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
 import com.ryanharter.ktor.moshi.moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import io.ktor.application.Application
 import io.ktor.application.call
+import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
-import io.ktor.application.install
-import io.ktor.auth.AuthenticationPipeline
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.CallLogging
@@ -20,86 +21,95 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.server.netty.NettyApplicationEngine
-import io.ktor.util.pipeline.Pipeline
 import io.prometheus.client.hotspot.DefaultExports
-import no.nav.dagpenger.oppslag.ws.arbeidsfordeling.arbeidsfordeling
-import no.nav.dagpenger.oppslag.ws.arena.arena
-import no.nav.dagpenger.oppslag.ws.joark.joark
-import no.nav.dagpenger.oppslag.ws.person.person
 import no.nav.dagpenger.oppslag.ws.Clients
+import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
+import no.nav.dagpenger.oppslag.ws.joark.joark
+import no.nav.dagpenger.oppslag.ws.sts.stsClient
+import no.nav.helse.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
+import no.nav.helse.ws.sts.configureFor
+import no.nav.helse.ws.sts.stsClient
+import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
+import java.net.URL
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
 fun main() {
     val env = Environment()
-    val app = App(env)
 
-    app.start()
+    DefaultExports.initialize()
+
+    val app = embeddedServer(Netty, 8080) {
+        val jwkProvider = JwkProviderBuilder(URL(env.jwksUrl))
+            .cached(10, 24, TimeUnit.HOURS)
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
+
+        oppslag(env, jwkProvider)
+    }
+
+    app.start(wait = false)
 
     Runtime.getRuntime().addShutdownHook(Thread {
-        app.stop()
+        app.stop(5, 60, TimeUnit.SECONDS)
     })
 }
 
-class App(env: Environment = Environment()) {
-    private val nettyServer: NettyApplicationEngine
-    private val clients: Clients = Clients(env)
+fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
+    install(DefaultHeaders)
+    install(CallLogging)
+    install(ContentNegotiation) {
+        moshi {
+            add(KotlinJsonAdapterFactory())
+            add(Date::class.java, Rfc3339DateJsonAdapter())
+        }
+    }
 
-    private val jwkProvider = JwkProviderBuilder(env.jwksUrl)
-        .cached(10, 24, TimeUnit.HOURS)
-        .rateLimited(10, 1, TimeUnit.MINUTES)
-        .build()
-
-    init {
-        DefaultExports.initialize()
-
-        nettyServer = embeddedServer(Netty, env.httpPort) {
-            install(DefaultHeaders)
-            install(CallLogging)
-            install(ContentNegotiation) {
-                moshi {
-                    add(KotlinJsonAdapterFactory())
-                    add(Date::class.java, Rfc3339DateJsonAdapter())
+    install(Authentication) {
+        jwt {
+            realm = "Helse Sparkel"
+            verifier(jwkProvider, env.jwtIssuer)
+            validate { credentials ->
+                if (credentials.payload.subject in listOf("srvspinne", "srvsplitt")) {
+                    JWTPrincipal(credentials.payload)
                 }
-            }
-
-            install(Authentication) {
-                jwt {
-                    realm = "Helse Sparkel"
-                    verifier(jwkProvider, env.jwtIssuer)
-                    validate { credentials ->
-                        if (credentials.payload.subject in listOf("srvspinne", "srvsplitt")) {
-                            JWTPrincipal(credentials.payload)
-                        }
-                        null
-                    }
-                }
-            }
-
-            routing {
-                authenticate {
-                    person(clients.personClient)
-                    arbeidsfordeling(clients.arbeidsfordelingClient)
-                    arena(clients.arenaClient)
-                    joark(clients.joarkClient)
-                }
-
-                get("/isAlive") {
-                    call.respondText("ALIVE", ContentType.Text.Plain)
-                }
-                get("/isReady") {
-                    call.respondText("READY", ContentType.Text.Plain)
-                }
+                null
             }
         }
     }
 
-    fun start() {
-        nettyServer.start(wait = false)
+    val stsClient by lazy {
+        stsClient(env.securityTokenServiceEndpointUrl,
+            env.securityTokenUsername to env.securityTokenPassword
+        )
     }
 
-    fun stop() {
-        nettyServer.stop(5, 60, TimeUnit.SECONDS)
+    routing {
+        authenticate {
+            joark {
+                val port = Clients.createServicePort(
+                    endpoint = env.inngaaendeJournalUrl,
+                    service = BehandleInngaaendeJournalV1::class.java
+                )
+
+                if (env.allowInsecureSoapRequests) {
+                    stsClient.configureFor(port, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
+                } else {
+                    stsClient.configureFor(port)
+                }
+
+                JoarkClient(port)
+            }
+            /*person(clients.personClient)
+            arbeidsfordeling(clients.arbeidsfordelingClient)
+            arena(clients.arenaClient)*/
+        }
+
+        get("/isAlive") {
+            call.respondText("ALIVE", ContentType.Text.Plain)
+        }
+        get("/isReady") {
+            call.respondText("READY", ContentType.Text.Plain)
+        }
     }
 }
