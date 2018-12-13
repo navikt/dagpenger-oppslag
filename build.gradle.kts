@@ -73,7 +73,6 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     implementation("org.slf4j:slf4j-simple:1.6.1")
 
-
     compile("io.ktor:ktor-server-netty:$ktorVersion")
     compile("io.ktor:ktor-auth-jwt:$ktorVersion")
     compile("com.ryanharter.ktor:ktor-moshi:1.0.0")

@@ -26,9 +26,8 @@ import no.nav.dagpenger.oppslag.ws.Clients
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
 import no.nav.dagpenger.oppslag.ws.sts.stsClient
-import no.nav.helse.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
-import no.nav.helse.ws.sts.configureFor
-import no.nav.helse.ws.sts.stsClient
+import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
+import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
 import java.net.URL
 import java.util.Date

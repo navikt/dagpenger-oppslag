@@ -13,8 +13,7 @@ data class Environment(val map: Map<String, String> = System.getenv()) {
     val arenaHentSakerUrl: String by lazyEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")
     val inngaaendeJournalUrl: String by lazyEnvVar("BEHANDLEINNGAAENDEJOURNAL_V1_ENDPOINTURL")
     val fasitEnvironmentName: String by lazyEnvVar(
-        "FASIT_ENVIRONMENT_NAME",
-        ""
+        "FASIT_ENVIRONMENT_NAME"
     ) // .filterNot { it in "p" } //filter out production
 
     val httpPort: Int = 8080
@@ -37,7 +36,8 @@ data class Environment(val map: Map<String, String> = System.getenv()) {
         mapper: ((String) -> R)
     ): ReadOnlyProperty<Environment, R> {
         return object : ReadOnlyProperty<Environment, R> {
-            override operator fun getValue(thisRef: Environment, property: KProperty<*>) = mapper(envVar(key, defaultValue))
+            override operator fun getValue(thisRef: Environment, property: KProperty<*>) =
+                mapper(envVar(key, defaultValue))
         }
     }
 

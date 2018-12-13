@@ -18,7 +18,7 @@ class OnBehalfOfOutInterceptor : AbstractPhaseInterceptor<Message>(Phase.SETUP) 
     private val OIDC_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:jwt"
 
     override fun handleMessage(message: Message?) {
-        //val token = tokenHandler.getToken()
+        // val token = tokenHandler.getToken()
         var token = "123"
         message?.set(STS_TOKEN_ON_BEHALF_OF, createOnBehalfOfElement(token))
     }

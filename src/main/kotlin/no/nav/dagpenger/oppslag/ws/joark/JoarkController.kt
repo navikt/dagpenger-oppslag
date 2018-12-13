@@ -10,7 +10,7 @@ fun Route.joark(joarkClient: () -> JoarkClient) {
     post("api/joark/ferdigstill") {
         val request = call.receive<JoarkFerdigstillRequest>()
         val response = joarkClient().ferdigstillJournalføring(request.journalpostId)
-        //val foo = call.authentication.principal<JWTPrincipal>()
+        // val foo = call.authentication.principal<JWTPrincipal>()
 
         call.respond(response)
     }

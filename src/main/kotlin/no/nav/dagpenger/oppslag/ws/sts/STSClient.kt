@@ -1,4 +1,4 @@
-package no.nav.helse.ws.sts
+package no.nav.dagpenger.oppslag.ws.sts
 
 import org.apache.cxf.Bus
 import org.apache.cxf.BusFactory
@@ -16,7 +16,7 @@ import org.apache.neethi.Policy
 
 val STS_CLIENT_AUTHENTICATION_POLICY = "classpath:ws/untPolicy.xml"
 val STS_SAML_POLICY = "classpath:ws/requestSamlPolicy.xml"
-val STS_SAML_POLICY_NO_TRANSPORT_BINDING = "classpath:ws/requestSamlPolicyNoTransportBinding.xml";
+val STS_SAML_POLICY_NO_TRANSPORT_BINDING = "classpath:ws/requestSamlPolicyNoTransportBinding.xml"
 
 fun stsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
     val bus = BusFactory.getDefaultBus()
