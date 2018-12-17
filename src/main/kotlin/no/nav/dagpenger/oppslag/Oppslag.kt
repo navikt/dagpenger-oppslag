@@ -25,10 +25,13 @@ import io.prometheus.client.hotspot.DefaultExports
 import no.nav.dagpenger.oppslag.ws.Clients
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
+import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
+import no.nav.dagpenger.oppslag.ws.person.person
 import no.nav.dagpenger.oppslag.ws.sts.stsClient
 import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
 import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
+import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import java.net.URL
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -78,7 +81,8 @@ fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
     }
 
     val stsClient by lazy {
-        stsClient(env.securityTokenServiceEndpointUrl,
+        stsClient(
+            env.securityTokenServiceEndpointUrl,
             env.securityTokenUsername to env.securityTokenPassword
         )
     }
@@ -99,9 +103,22 @@ fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
 
                 JoarkClient(port)
             }
-            /*person(clients.personClient)
-            arbeidsfordeling(clients.arbeidsfordelingClient)
-            arena(clients.arenaClient)*/
+            person {
+                val port = Clients.createServicePort(
+                    endpoint = env.inngaaendeJournalUrl,
+                    service = PersonV3::class.java
+                )
+
+                if (env.allowInsecureSoapRequests) {
+                    stsClient.configureFor(port, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
+                } else {
+                    stsClient.configureFor(port)
+                }
+
+                PersonClientSoap(port)
+            }
+//                arbeidsfordeling(clients.arbeidsfordelingClient)
+//                arena(clients.arenaClient)
         }
 
         get("/isAlive") {
