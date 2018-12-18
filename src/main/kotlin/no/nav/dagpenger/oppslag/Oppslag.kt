@@ -8,6 +8,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.JWTPrincipal
@@ -32,6 +33,8 @@ import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import java.net.URL
 import java.util.Date
 import java.util.concurrent.TimeUnit
+
+private val authorizedUsers = listOf("srvdp-jrnf-ruting")
 
 fun main() {
     val env = Environment()
@@ -66,13 +69,15 @@ fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
 
     install(Authentication) {
         jwt {
-            realm = "Helse Sparkel"
+            realm = "Dagpenger Oppslag"
             verifier(jwkProvider, env.jwtIssuer)
             validate { credentials ->
-                if (credentials.payload.subject in listOf("srvspinne", "srvsplitt")) {
-                    JWTPrincipal(credentials.payload)
+                if (credentials.payload.subject in authorizedUsers) {
+                    log.info("authorization ok")
+                    return@validate JWTPrincipal(credentials.payload)
                 } else {
-                    null
+                    log.info("authorization failed")
+                    return@validate null
                 }
             }
         }

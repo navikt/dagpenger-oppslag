@@ -57,7 +57,7 @@ class PersonComponentTest {
     @Test
     fun `that response is json`() {
         val jwtStub = JwtStub("test issuer")
-        val token = jwtStub.createTokenFor("srvspinne")
+        val token = jwtStub.createTokenFor("srvdp-jrnf-ruting")
 
         WireMock.stubFor(stsStub("stsUsername", "stsPassword")
             .willReturn(samlAssertionResponse("testusername", "theIssuer", "CN=B27 Issuing CA Intern, DC=preprod, DC=local",
