@@ -12,6 +12,7 @@ data class Environment(val map: Map<String, String> = System.getenv()) {
     val arenaOppgaveUrl: String by lazyEnvVar("VIRKSOMHET_BEHANDLEARBEIDOGAKTIVITETOPPGAVE_V1_ENDPOINTURL")
     val arenaHentSakerUrl: String by lazyEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")
     val inngaaendeJournalUrl: String by lazyEnvVar("BEHANDLEINNGAAENDEJOURNAL_V1_ENDPOINTURL")
+    val inntektEndpointUrl: String by lazyEnvVar("INNTEKT_ENDPOINTURL")
     val fasitEnvironmentName: String by lazyEnvVar(
         "FASIT_ENVIRONMENT_NAME"
     ) // .filterNot { it in "p" } //filter out production
