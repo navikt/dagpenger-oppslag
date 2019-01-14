@@ -8,17 +8,25 @@ import io.ktor.routing.post
 
 fun Route.arbeidsfordeling(arbeidsfordelingClient: ArbeidsfordelingClientSoap) {
     post("api/arbeidsfordeling/behandlende-enhet") {
-        val (geografiskTilknytning, diskresjonskode) = call.receive<BehandlendeEnhetRequest>()
-        val behandlendeEnhet = arbeidsfordelingClient.getBehandlendeEnhet(
-            geografiskTilknytning,
-            diskresjonskode
-        )
 
-        call.respond(behandlendeEnhet ?: "")
+        val request = call.receive<BehandlendeEnhetRequest>()
+
+        val behandlendeEnheter = arbeidsfordelingClient.getBehandlendeEnhet(request)
+                .map { it -> BehandlendeEnhet(it.enhetId, it.enhetNavn) }
+
+        call.respond(BehandlendeEnhetResponse(behandlendeEnheter))
     }
 }
 
 data class BehandlendeEnhetRequest(
     val geografiskTilknytning: String,
+    val tema: String,
     val diskresjonskode: String?
 )
+
+data class BehandlendeEnhet(
+    var enhetId: String,
+    var enhetNavn: String
+)
+
+data class BehandlendeEnhetResponse(val behandlendeEnheter: List<BehandlendeEnhet>)

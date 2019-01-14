@@ -4,12 +4,10 @@ plugins {
     id("com.diffplug.gradle.spotless") version "3.13.0"
     id("com.palantir.docker") version "0.20.1"
     id("com.palantir.git-version") version "0.11.0"
-    id("com.adarshr.test-logger") version "1.5.0"
 }
 
 apply {
     plugin("com.diffplug.gradle.spotless")
-    plugin("com.adarshr.test-logger")
 }
 
 repositories {
@@ -53,12 +51,14 @@ val ktorVersion = "1.0.0"
 val moshiVersion = "1.8.0"
 val prometheusVersion = "0.5.0"
 val junitJupiterVersion = "5.3.1"
+val log4j2Version = "2.11.1"
 
 buildscript {
     dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
     }
 }
+
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -88,7 +88,19 @@ dependencies {
     compile("io.ktor:ktor-auth-jwt:$ktorVersion")
     compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
     compile("com.squareup.okio:okio:2.1.0")
+    compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
 
+    implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
+    implementation("javax.xml.ws:jaxws-api:2.3.1")
+
+    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
+    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
+    implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
+
+    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit"))
+    testImplementation("junit:junit:4.12")
     testImplementation("com.github.tomakehurst:wiremock:2.19.0")
     testCompile("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testCompile("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
@@ -120,7 +132,8 @@ val wsdlsToGenerate = listOf(
         "$wsdlDir/inngaaendejournal/Binding.wsdl",
         "$wsdlDir/person/Binding.wsdl",
         "$wsdlDir/arbeidsfordeling/Binding.wsdl",
-        "$wsdlDir/hentsak/arenaSakVedtakService.wsdl")
+        "$wsdlDir/hentsak/arenaSakVedtakService.wsdl",
+        "$wsdlDir/inntektskomponenten.v3/Binding.wsdl")
 val generatedDir = "$projectDir/build/generated-sources"
 
 tasks {
