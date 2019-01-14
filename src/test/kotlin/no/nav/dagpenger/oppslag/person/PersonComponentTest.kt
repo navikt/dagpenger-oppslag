@@ -11,7 +11,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
-import junit.framework.Assert.assertEquals
 import no.nav.dagpenger.oppslag.Environment
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.oppslag

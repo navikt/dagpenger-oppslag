@@ -1,11 +1,11 @@
 package no.nav.dagpenger.oppslag.joark
 
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.fail
 import no.nav.dagpenger.oppslag.Failure
 import no.nav.dagpenger.oppslag.Success
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
 
 class JoarkClientTest {
 

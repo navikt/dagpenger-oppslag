@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id("application")
     kotlin("jvm") version "1.3.10"
@@ -53,13 +56,6 @@ val prometheusVersion = "0.5.0"
 val junitJupiterVersion = "5.3.1"
 val log4j2Version = "2.11.1"
 
-buildscript {
-    dependencies {
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
-    }
-}
-
-
 dependencies {
     implementation(kotlin("stdlib"))
 
@@ -99,12 +95,10 @@ dependencies {
     implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
 
     testImplementation(kotlin("test"))
-    testImplementation(kotlin("test-junit"))
-    testImplementation("junit:junit:4.12")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testImplementation("com.github.tomakehurst:wiremock:2.19.0")
-    testCompile("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testCompile("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
 
     testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty") // conflicts with WireMock
@@ -151,3 +145,13 @@ tasks {
     }
 }
 tasks.getByName("compileKotlin").dependsOn("wsimport")
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        showExceptions = true
+        showStackTraces = true
+        exceptionFormat = TestExceptionFormat.FULL
+        events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+    }
+}

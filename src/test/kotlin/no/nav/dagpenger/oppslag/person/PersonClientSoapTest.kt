@@ -1,12 +1,12 @@
 package no.nav.dagpenger.oppslag.person
 
-import junit.framework.Assert.assertEquals
-import junit.framework.Assert.fail
 import no.nav.dagpenger.oppslag.Failure
 import no.nav.dagpenger.oppslag.Success
 import no.nav.dagpenger.oppslag.ws.person.GeografiskTilknytningResponse
 import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
 import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.fail
 
 class PersonClientSoapTest {
 
