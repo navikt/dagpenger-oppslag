@@ -83,7 +83,6 @@ class InntektComponentTest {
                 setBody("{\"aktorid\": \"12345678\"}")
             }.apply {
                 Assertions.assertEquals(200, response.status()?.value)
-                // assert json equals to expectedJson
             }
         }
     }
@@ -113,8 +112,8 @@ private val hentInntektListeBolk_response = """
                         <virksomhet xsi:type="ns4:Organisasjon">
                            <orgnummer>973861778</orgnummer>
                         </virksomhet>
-                        <inntektsmottaker xsi:type="ns4:PersonIdent">
-                           <personIdent>12345678</personIdent>
+                        <inntektsmottaker xsi:type="ns4:AktoerId">
+                           <aktoerId>12345678</aktoerId>
                         </inntektsmottaker>
                         <inngaarIGrunnlagForTrekk>true</inngaarIGrunnlagForTrekk>
                         <utloeserArbeidsgiveravgift>true</utloeserArbeidsgiveravgift>
@@ -140,8 +139,8 @@ private val hentInntektListeBolk_response = """
                         <virksomhet xsi:type="ns4:Organisasjon">
                            <orgnummer>973861778</orgnummer>
                         </virksomhet>
-                        <inntektsmottaker xsi:type="ns4:PersonIdent">
-                           <personIdent>12345678</personIdent>
+                        <inntektsmottaker xsi:type="ns4:AktoerId">
+                           <aktoerId>12345678</aktoerId>
                         </inntektsmottaker>
                         <inngaarIGrunnlagForTrekk>true</inngaarIGrunnlagForTrekk>
                         <utloeserArbeidsgiveravgift>true</utloeserArbeidsgiveravgift>
@@ -150,129 +149,12 @@ private val hentInntektListeBolk_response = """
                      </inntektListe>
                   </arbeidsInntektInformasjon>
                </arbeidsInntektMaaned>
-               <ident xsi:type="ns4:PersonIdent" xmlns:ns4="http://nav.no/tjeneste/virksomhet/inntekt/v3/informasjon/inntekt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-                  <personIdent>12345678</personIdent>
+               <ident xsi:type="ns4:AktoerId" xmlns:ns4="http://nav.no/tjeneste/virksomhet/inntekt/v3/informasjon/inntekt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                  <aktoerId>12345678</aktoerId>
                </ident>
             </arbeidsInntektIdentListe>
          </response>
       </ns2:hentInntektListeBolkResponse>
    </soap:Body>
 </soap:Envelope>
-""".trimIndent()
-
-private val expectedJson = """
-{
-  "sikkerhetsavvikListe": [],
-  "arbeidsInntektIdentListe": [
-    {
-      "ident": {
-        "personIdent": "12345678"
-      },
-      "arbeidsInntektMaaned": [
-        {
-          "arbeidsInntektInformasjon": {
-            "inntektListe": [
-              {
-                "utloeserArbeidsgiveravgift": true,
-                "inntektsmottaker": {
-                  "personIdent": "12345678"
-                },
-                "opplysningspliktig": {
-                  "orgnummer": "973861778"
-                },
-                "informasjonsstatus": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Informasjonsstatuser",
-                  "value": "InngaarAlltid"
-                },
-                "virksomhet": {
-                  "orgnummer": "973861778"
-                },
-                "beloep": 40000,
-                "levereringstidspunkt": "2018-12-05T09:50:10.777+01:00",
-                "inntektsstatus": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Inntektsstatuser",
-                  "value": "LoependeInnrapportert"
-                },
-                "inngaarIGrunnlagForTrekk": true,
-                "inntektsperiodetype": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Inntektsperiodetyper",
-                  "value": "Maaned"
-                },
-                "fordel": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Fordel",
-                  "value": "kontantytelse"
-                },
-                "beskrivelse": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Loennsbeskrivelse",
-                  "value": "fastloenn"
-                },
-                "inntektskilde": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/InntektsInformasjonsopphav",
-                  "value": "A-ordningen"
-                },
-                "utbetaltIPeriode": "2017-12"
-              }
-            ],
-            "arbeidsforholdListe": [],
-            "forskuddstrekkListe": [],
-            "fradragListe": []
-          },
-          "aarMaaned": "2017-12+01:00",
-          "avvikListe": []
-        },
-        {
-          "arbeidsInntektInformasjon": {
-            "inntektListe": [
-              {
-                "utloeserArbeidsgiveravgift": true,
-                "inntektsmottaker": {
-                  "personIdent": "12345678"
-                },
-                "opplysningspliktig": {
-                  "orgnummer": "973861778"
-                },
-                "informasjonsstatus": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Informasjonsstatuser",
-                  "value": "InngaarAlltid"
-                },
-                "virksomhet": {
-                  "orgnummer": "973861778"
-                },
-                "beloep": 40000,
-                "levereringstidspunkt": "2018-12-05T09:50:10.777+01:00",
-                "inntektsstatus": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Inntektsstatuser",
-                  "value": "LoependeInnrapportert"
-                },
-                "inngaarIGrunnlagForTrekk": true,
-                "inntektsperiodetype": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Inntektsperiodetyper",
-                  "value": "Maaned"
-                },
-                "fordel": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Fordel",
-                  "value": "kontantytelse"
-                },
-                "beskrivelse": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/Loennsbeskrivelse",
-                  "value": "fastloenn"
-                },
-                "inntektskilde": {
-                  "kodeverksRef": "http://nav.no/kodeverk/Kodeverk/InntektsInformasjonsopphav",
-                  "value": "A-ordningen"
-                },
-                "utbetaltIPeriode": "2018-01"
-              }
-            ],
-            "arbeidsforholdListe": [],
-            "forskuddstrekkListe": [],
-            "fradragListe": []
-          },
-          "aarMaaned": "2018-01+01:00",
-          "avvikListe": []
-        }
-      ]
-    }
-  ]
-}
 """.trimIndent()
