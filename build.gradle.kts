@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id("application")
     kotlin("jvm") version "1.3.10"
@@ -42,35 +45,44 @@ docker {
     tags(project.version.toString())
 }
 
-val kotlinLoggingVersion = "1.4.9"
-val fuelVersion = "1.15.0"
 val confluentVersion = "4.1.2"
+val cxfVersion = "3.2.7"
+val fuelVersion = "1.15.0"
 val kafkaVersion = "2.0.0"
+val kotlinLoggingVersion = "1.4.9"
 val ktorVersion = "1.0.0"
-val cxfVersion = "3.2.6"
 val moshiVersion = "1.8.0"
+val prometheusVersion = "0.5.0"
+val junitJupiterVersion = "5.3.1"
 val log4j2Version = "2.11.1"
 
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
-    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
     implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
+    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
 
-    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+    implementation("com.squareup.moshi:moshi:$moshiVersion")
+
+    implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
+    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
+    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+    implementation("javax.xml.ws:jaxws-api:2.3.1")
+
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
-    implementation("org.apache.cxf:cxf-rt-transports-http-jetty:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
+    implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    testCompile("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
 
     implementation("org.slf4j:slf4j-simple:1.6.1")
 
     compile("io.ktor:ktor-server-netty:$ktorVersion")
-
-    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
-    implementation("com.squareup.moshi:moshi:$moshiVersion")
-    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
+    compile("io.ktor:ktor-auth-jwt:$ktorVersion")
+    compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
     compile("com.squareup.okio:okio:2.1.0")
     compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
 
@@ -83,9 +95,14 @@ dependencies {
     implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
 
     testImplementation(kotlin("test"))
-    testImplementation(kotlin("test-junit"))
-    testImplementation("junit:junit:4.12")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testImplementation("com.github.tomakehurst:wiremock:2.19.0")
+
+    testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
+        exclude(group = "org.eclipse.jetty") // conflicts with WireMock
+    }
 }
 
 spotless {
@@ -128,3 +145,13 @@ tasks {
     }
 }
 tasks.getByName("compileKotlin").dependsOn("wsimport")
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        showExceptions = true
+        showStackTraces = true
+        exceptionFormat = TestExceptionFormat.FULL
+        events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+    }
+}

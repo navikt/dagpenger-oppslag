@@ -5,6 +5,7 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.post
+import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
 
 fun Routing.person(personClient: PersonClientSoap) {
     post("api/person/geografisk-tilknytning") {

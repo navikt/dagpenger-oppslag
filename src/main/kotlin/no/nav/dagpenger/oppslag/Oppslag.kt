@@ -1,11 +1,18 @@
 package no.nav.dagpenger.oppslag
 
+import com.auth0.jwk.JwkProvider
+import com.auth0.jwk.JwkProviderBuilder
 import com.ryanharter.ktor.moshi.moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.application.log
+import io.ktor.auth.Authentication
+import io.ktor.auth.authenticate
+import io.ktor.auth.jwt.JWTPrincipal
+import io.ktor.auth.jwt.jwt
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
@@ -15,35 +22,45 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import mu.KotlinLogging
-import no.nav.arena.services.sakvedtakservice.SakVedtakPortType
-import no.nav.dagpenger.oppslag.arbeidsfordeling.ArbeidsfordelingClientSoap
-import no.nav.dagpenger.oppslag.arbeidsfordeling.arbeidsfordeling
-import no.nav.dagpenger.oppslag.arena.ArenaClientSoap
-import no.nav.dagpenger.oppslag.arena.arena
-import no.nav.dagpenger.oppslag.joark.JoarkClientSoap
-import no.nav.dagpenger.oppslag.joark.joark
-import no.nav.dagpenger.oppslag.person.PersonClientSoap
-import no.nav.dagpenger.oppslag.person.person
-import no.nav.tjeneste.virksomhet.arbeidsfordeling.v1.binding.ArbeidsfordelingV1
-import no.nav.tjeneste.virksomhet.behandlearbeidogaktivitetoppgave.v1.binding.BehandleArbeidOgAktivitetOppgaveV1
+import io.prometheus.client.hotspot.DefaultExports
+import no.nav.dagpenger.oppslag.ws.Clients
+import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
+import no.nav.dagpenger.oppslag.ws.joark.joark
+import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
+import no.nav.dagpenger.oppslag.ws.person.person
+import no.nav.dagpenger.oppslag.ws.sts.stsClient
+import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
+import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
+import java.net.URL
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
-private val LOGGER = KotlinLogging.logger {}
+private val authorizedUsers = listOf("srvdp-jrnf-ruting", "srvdp-jrnf-ferdig")
 
-class Oppslag {
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val env = Environment()
-            embeddedServer(Netty, port = env.httpPort, module = Application::main).start(wait = true)
-        }
+fun main() {
+    val env = Environment()
+
+    DefaultExports.initialize()
+
+    val app = embeddedServer(Netty, 8080) {
+        val jwkProvider = JwkProviderBuilder(URL(env.jwksUrl))
+            .cached(10, 24, TimeUnit.HOURS)
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
+
+        oppslag(env, jwkProvider)
     }
+
+    app.start(wait = false)
+
+    Runtime.getRuntime().addShutdownHook(Thread {
+        app.stop(5, 60, TimeUnit.SECONDS)
+    })
 }
 
-fun Application.main() {
+fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
     install(DefaultHeaders)
     install(CallLogging)
     install(ContentNegotiation) {
@@ -52,32 +69,63 @@ fun Application.main() {
             add(Date::class.java, Rfc3339DateJsonAdapter())
         }
     }
-    val env = Environment()
 
-    val person = WsClient<PersonV3>(env.oicdStsUrl, env.username, env.password)
-            .createPortForSystemUser(env.dagpengerPersonUrl, PersonV3::class.java)
-    val personClient = PersonClientSoap(person)
+    install(Authentication) {
+        jwt {
+            realm = "Dagpenger Oppslag"
+            verifier(jwkProvider, env.jwtIssuer)
+            validate { credentials ->
+                if (credentials.payload.subject in authorizedUsers) {
+                    log.info("authorization ok")
+                    return@validate JWTPrincipal(credentials.payload)
+                } else {
+                    log.info("authorization failed")
+                    return@validate null
+                }
+            }
+        }
+    }
 
-    val arbeidsfordeling = WsClient<ArbeidsfordelingV1>(env.oicdStsUrl, env.username, env.password)
-            .createPortForSystemUser(env.dagpengerArbeidsfordelingUrl, ArbeidsfordelingV1::class.java)
-    val arbeidsfordelingClient = ArbeidsfordelingClientSoap(arbeidsfordeling)
-
-    val behandleArbeidOgAktivitetOppgave = WsClient<BehandleArbeidOgAktivitetOppgaveV1>(env.oicdStsUrl, env.username, env.password)
-            .createPortForSystemUser(env.dagpengerArenaOppgaveUrl, BehandleArbeidOgAktivitetOppgaveV1::class.java)
-
-    val hentSaksInfoListe = WsClient<SakVedtakPortType>(env.oicdStsUrl, env.username, env.password)
-            .createPortForSystemUser(env.dagpengerArenaHentSakerUrl, SakVedtakPortType::class.java)
-    val arenaClient = ArenaClientSoap(behandleArbeidOgAktivitetOppgave, hentSaksInfoListe)
-
-    val inngåendeJournal = WsClient<BehandleInngaaendeJournalV1>(env.oicdStsUrl, env.username, env.password)
-            .createPortForSystemUser(env.dagpengerInngaaendeJournalUrl, BehandleInngaaendeJournalV1::class.java)
-    val joarkClient = JoarkClientSoap(inngåendeJournal)
+    val stsClient by lazy {
+        stsClient(
+            env.securityTokenServiceEndpointUrl,
+            env.securityTokenUsername to env.securityTokenPassword
+        )
+    }
 
     routing {
-        person(personClient)
-        arbeidsfordeling(arbeidsfordelingClient)
-        arena(arenaClient)
-        joark(joarkClient)
+        authenticate {
+            joark {
+                val port = Clients.createServicePort(
+                    endpoint = env.inngaaendeJournalUrl,
+                    service = BehandleInngaaendeJournalV1::class.java
+                )
+
+                if (env.allowInsecureSoapRequests) {
+                    stsClient.configureFor(port, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
+                } else {
+                    stsClient.configureFor(port)
+                }
+
+                JoarkClient(port)
+            }
+            person {
+                val port = Clients.createServicePort(
+                    endpoint = env.personUrl,
+                    service = PersonV3::class.java
+                )
+
+                if (env.allowInsecureSoapRequests) {
+                    stsClient.configureFor(port, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
+                } else {
+                    stsClient.configureFor(port)
+                }
+
+                PersonClientSoap(port)
+            }
+//                arbeidsfordeling(clients.arbeidsfordelingClient)
+//                arena(clients.arenaClient)
+        }
 
         get("/isAlive") {
             call.respondText("ALIVE", ContentType.Text.Plain)
