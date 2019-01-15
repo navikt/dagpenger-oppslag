@@ -12,7 +12,9 @@ fun Route.arbeidsfordeling(arbeidsfordelingClient: ArbeidsfordelingClientSoap) {
         val request = call.receive<BehandlendeEnhetRequest>()
 
         val behandlendeEnheter = arbeidsfordelingClient.getBehandlendeEnhet(request)
-                .map { it -> BehandlendeEnhet(it.enhetId, it.enhetNavn) }
+            .map { organisasjonsenhet ->
+                BehandlendeEnhet(organisasjonsenhet.enhetId, organisasjonsenhet.enhetNavn)
+            }
 
         call.respond(BehandlendeEnhetResponse(behandlendeEnheter))
     }

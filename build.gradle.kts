@@ -55,6 +55,7 @@ val moshiVersion = "1.8.0"
 val prometheusVersion = "0.5.0"
 val junitJupiterVersion = "5.3.1"
 val log4j2Version = "2.11.1"
+val tjenestespesifikasjonerVersion = "1.2018.12.07-12.38-73cf10f9640d" // see https://github.com/navikt/tjenestespesifikasjoner
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -77,6 +78,8 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     testCompile("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
+
+    implementation("no.nav.tjenestespesifikasjoner:nav-fim-inntekt-v3-tjenestespesifikasjon:$tjenestespesifikasjonerVersion")
 
     implementation("org.slf4j:slf4j-simple:1.6.1")
 
