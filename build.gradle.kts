@@ -109,7 +109,8 @@ val wsdlsToGenerate = listOf(
         "$wsdlDir/inngaaendejournal/Binding.wsdl",
         "$wsdlDir/person/Binding.wsdl",
         "$wsdlDir/arbeidsfordeling/Binding.wsdl",
-        "$wsdlDir/hentsak/arenaSakVedtakService.wsdl")
+        "$wsdlDir/hentsak/arenaSakVedtakService.wsdl",
+        "$wsdlDir/inntektskomponenten.v3/Binding.wsdl")
 val generatedDir = "$projectDir/build/generated-sources"
 
 tasks {
