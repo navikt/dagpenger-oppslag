@@ -26,7 +26,9 @@ class InntektClient(private val inntektV3: InntektV3) {
             }
             ainntektsfilter = Ainntektsfilter().apply {
                 // https://confluence.adeo.no/display/FK/A-inntektsfilter
-                value = "Dagpenger" // todo: figure out correct code.
+                //value = "Dagpenger" // todo: figure out correct code.
+                value = "DagpengerGrunnlagA-Inntekt"
+                //value = "DagpengerMinsteinntektA-Inntekt"
             }
             uttrekksperiode = Uttrekksperiode().apply {
                 // todo : create proper filter•
