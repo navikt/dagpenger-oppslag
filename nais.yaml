@@ -25,6 +25,8 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: virksomhet:BehandleArbeidOgAktivitetOppgave_v1
     resourceType: webserviceendpoint
+  - alias: virksomhet:Inntekt_v3
+    resourceType: webserviceendpoint
   exposed:
   - alias: dagpenger-oppslag-api
     resourceType: restservice
