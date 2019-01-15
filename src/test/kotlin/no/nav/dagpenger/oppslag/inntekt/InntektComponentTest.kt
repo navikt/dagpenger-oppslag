@@ -71,7 +71,7 @@ class InntektComponentTest {
             "SECURITYTOKENSERVICE_URL" to server.baseUrl().plus("/sts"),
             "SRVDAGPENGER_OPPSLAG_USERNAME" to "stsUsername",
             "SRVDAGPENGER_OPPSLAG_PASSWORD" to "stsPassword",
-            "INNTEKT_ENDPOINTURL" to server.baseUrl().plus("/inntekt"),
+            "VIRKSOMHET_INNTEKT_V3_ENDPOINTURL" to server.baseUrl().plus("/inntekt"),
             "JWT_ISSUER" to "test issuer",
             "ALLOW_INSECURE_SOAP_REQUESTS" to "true"
         ))
