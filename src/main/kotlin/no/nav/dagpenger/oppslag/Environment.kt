@@ -12,15 +12,11 @@ data class Environment(val map: Map<String, String> = System.getenv()) {
     val arenaOppgaveUrl: String by lazyEnvVar("VIRKSOMHET_BEHANDLEARBEIDOGAKTIVITETOPPGAVE_V1_ENDPOINTURL")
     val arenaHentSakerUrl: String by lazyEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")
     val inngaaendeJournalUrl: String by lazyEnvVar("BEHANDLEINNGAAENDEJOURNAL_V1_ENDPOINTURL")
-    val inntektEndpointUrl: String by lazyEnvVar("INNTEKT_ENDPOINTURL")
-    val fasitEnvironmentName: String by lazyEnvVar(
-        "FASIT_ENVIRONMENT_NAME"
-    ) // .filterNot { it in "p" } //filter out production
+    val inntektEndpointUrl: String by lazyEnvVar("VIRKSOMHET_INNTEKT_V3_ENDPOINTURL")
 
     val httpPort: Int = 8080
     val jwksUrl: String by lazyEnvVar("JWKS_URL")
     val jwtIssuer: String by lazyEnvVar("JWT_ISSUER")
-    val jwtAudience: String by lazyEnvVar("JWT_AUDIENCE")
 
     val allowInsecureSoapRequests: Boolean by lazyEnvVar(
         "ALLOW_INSECURE_SOAP_REQUESTS",

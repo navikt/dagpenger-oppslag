@@ -27,6 +27,14 @@ fasitResources:
     resourceType: webserviceendpoint
   - alias: virksomhet:Inntekt_v3
     resourceType: webserviceendpoint
+  - alias: security-token-service-issuer
+    resourceType: baseurl
+    propertyMap:
+      url: JWT_ISSUER
+  - alias: security-token-service-jwks
+    resourceType: restservice
+    propertyMap:
+      url: JWKS_URL
   exposed:
   - alias: dagpenger-oppslag-api
     resourceType: restservice
