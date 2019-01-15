@@ -32,7 +32,7 @@ val kafkaVersion = "2.0.0"
 val kotlinLoggingVersion = "1.4.9"
 val ktorVersion = "1.0.0"
 val moshiVersion = "1.8.0"
-val prometheusVersion = "0.5.0"
+val prometheusVersion = "0.6.0"
 val junitJupiterVersion = "5.3.1"
 val log4j2Version = "2.11.1"
 
