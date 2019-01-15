@@ -19,10 +19,13 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.ContentType
 import io.ktor.response.respondText
+import io.ktor.response.respondTextWriter
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import no.nav.dagpenger.oppslag.ws.Clients
 import no.nav.dagpenger.oppslag.ws.inntekt.InntektClient
@@ -54,6 +57,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 private val authorizedUsers = listOf("srvdp-jrnf-ruting", "srvdp-jrnf-ferdig", "srvdp-inntekt-api")
+private val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 
 fun main() {
     val env = Environment()
@@ -174,6 +178,12 @@ fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
         }
         get("/isReady") {
             call.respondText("READY", ContentType.Text.Plain)
+        }
+        get("/metrics") {
+            val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
+            call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
+                TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
+            }
         }
     }
 }

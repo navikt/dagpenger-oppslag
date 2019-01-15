@@ -17,7 +17,7 @@ repositories {
 
 application {
     applicationName = "dagpenger-oppslag"
-    mainClassName = "no.nav.dagpenger.oppslag.OppslagKt"
+    mainClassName = "no.nav.dagpenger.oppslag.OppslagAppKt"
 }
 
 sourceSets {

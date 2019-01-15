@@ -12,7 +12,7 @@ resources:
     cpu: 100m
     memory: 256Mi
 prometheus:
-  enabled: false
+  enabled: true
 fasitResources:
   used:
   - alias: srvdagpenger-oppslag
