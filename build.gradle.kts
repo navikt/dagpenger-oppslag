@@ -110,6 +110,9 @@ val generatedDir = "$projectDir/build/generated-sources"
 
 tasks {
     register("wsimport") {
+        inputs.files(wsdlsToGenerate)
+        outputs.dir(generatedDir)
+
         group = "other"
         doLast {
             mkdir(generatedDir)
