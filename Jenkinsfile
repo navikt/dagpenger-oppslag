@@ -39,9 +39,7 @@ pipeline {
 
     stage('Publish') {
       steps {
-        timeout(10) {
-                input 'Keep going?'
-        }
+        when { branch 'master' }
 
         withCredentials([usernamePassword(
           credentialsId: 'repo.adeo.no',
@@ -52,9 +50,7 @@ pipeline {
         }
         script {
           sh "docker build . --pull -t ${DOCKER_IMAGE_VERSION}"
-        }
-        script {
-          sh "docker push ${DOCKER_IMAGE_VERSION}"
+          sh "docker -D push ${DOCKER_IMAGE_VERSION}"
         }
       }
     }
