@@ -51,6 +51,7 @@ pipeline {
         script {
           sh "docker build . --pull -t ${DOCKER_IMAGE_VERSION}"
           sh "docker -D push ${DOCKER_IMAGE_VERSION}"
+          sh "echo $?"
         }
       }
     }
