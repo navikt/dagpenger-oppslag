@@ -38,9 +38,9 @@ pipeline {
     }
 
     stage('Publish') {
-      steps {
-        when { branch 'master' }
+      when { branch 'master' }
 
+      steps {
         withCredentials([usernamePassword(
           credentialsId: 'repo.adeo.no',
           usernameVariable: 'REPO_USERNAME',
