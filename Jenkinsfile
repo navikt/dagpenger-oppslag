@@ -50,7 +50,7 @@ pipeline {
         }
         script {
           sh "docker build . --pull -t ${DOCKER_IMAGE_VERSION}"
-          sh "docker push ${DOCKER_IMAGE_VERSION} || :" # exit with 0 regardless
+          sh "docker push ${DOCKER_IMAGE_VERSION} || :"
         }
       }
     }
