@@ -169,6 +169,7 @@ fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
                 } else {
                     stsClient.configureFor(port)
                 }
+
                 InntektClient(port)
             }
         }
