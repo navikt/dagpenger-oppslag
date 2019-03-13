@@ -28,7 +28,7 @@ sourceSets {
 val confluentVersion = "4.1.2"
 val cxfVersion = "3.2.7"
 val fuelVersion = "1.15.0"
-val kafkaVersion = "2.0.0"
+val kafkaVersion = "2.0.1"
 val kotlinLoggingVersion = "1.6.22"
 val ktorVersion = "1.0.0"
 val moshiVersion = "1.8.0"
