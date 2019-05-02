@@ -29,6 +29,6 @@ class PersonV3MisbehavingStub : PersonV3 {
     }
 
     override fun hentPerson(request: HentPersonRequest?): HentPersonResponse {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        throw Exception("SOAP-call failed")
     }
 }

@@ -3,8 +3,7 @@ package no.nav.dagpenger.oppslag
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
 import com.ryanharter.ktor.moshi.moshi
-import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.squareup.moshi.JsonDataException
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -16,7 +15,10 @@ import io.ktor.auth.jwt.jwt
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
+import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.response.respondTextWriter
 import io.ktor.routing.get
@@ -26,6 +28,7 @@ import io.ktor.server.netty.Netty
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import mu.KotlinLogging
 import no.nav.dagpenger.oppslag.ws.Clients
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
@@ -36,25 +39,54 @@ import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.dagpenger.oppslag.ws.sts.stsClient
 import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
+import java.net.URI
 import java.net.URL
-import java.util.Date
 import java.util.concurrent.TimeUnit
 
 private val authorizedUsers = listOf("srvdp-jrnf-ruting", "srvdp-jrnf-ferdig", "srvdp-inntekt-api")
 private val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
+
+private val LOGGER = KotlinLogging.logger {}
 
 fun main() {
     val env = Environment()
 
     DefaultExports.initialize()
 
-    val app = embeddedServer(Netty, 8080) {
-        val jwkProvider = JwkProviderBuilder(URL(env.jwksUrl))
-            .cached(10, 24, TimeUnit.HOURS)
-            .rateLimited(10, 1, TimeUnit.MINUTES)
-            .build()
+    val jwkProvider = JwkProviderBuilder(URL(env.jwksUrl))
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
 
-        oppslag(env, jwkProvider)
+    val stsClient by lazy {
+        stsClient(
+            env.securityTokenServiceEndpointUrl,
+            env.securityTokenUsername to env.securityTokenPassword
+        )
+    }
+
+    val joarkPort = Clients.createServicePort(
+        endpoint = env.inngaaendeJournalUrl,
+        service = BehandleInngaaendeJournalV1::class.java
+    )
+    val joarkClient = JoarkClient(joarkPort)
+
+    val personPort = Clients.createServicePort(
+        endpoint = env.personUrl,
+        service = PersonV3::class.java
+    )
+    val personClient = PersonClientSoap(personPort)
+
+    if (env.allowInsecureSoapRequests) {
+        stsClient.configureFor(joarkPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
+        stsClient.configureFor(personPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
+    } else {
+        stsClient.configureFor(joarkPort)
+        stsClient.configureFor(personPort)
+    }
+
+    val app = embeddedServer(Netty, 8080) {
+        oppslag(env, jwkProvider, joarkClient, personClient)
     }
 
     app.start(wait = false)
@@ -64,13 +96,27 @@ fun main() {
     })
 }
 
-fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
+fun Application.oppslag(
+    env: Environment,
+    jwkProvider: JwkProvider,
+    joarkClient: JoarkClient,
+    personClient: PersonClientSoap
+) {
+
     install(DefaultHeaders)
     install(CallLogging)
     install(ContentNegotiation) {
-        moshi {
-            add(KotlinJsonAdapterFactory())
-            add(Date::class.java, Rfc3339DateJsonAdapter())
+        moshi(moshiInstance)
+    }
+    install(StatusPages) {
+        exception<JsonDataException> { cause ->
+            LOGGER.warn("Request does not match expected json", cause)
+            val error = Problem(
+                type = URI("urn:dp:error:oppslag:parameter"),
+                title = "Parameteret er ikke gyldig, mangler obligatorisk felt: '${cause.message}'",
+                status = 400
+            )
+            call.respond(HttpStatusCode.BadRequest, error)
         }
     }
 
@@ -99,34 +145,8 @@ fun Application.oppslag(env: Environment, jwkProvider: JwkProvider) {
 
     routing {
         authenticate {
-            joark {
-                val port = Clients.createServicePort(
-                    endpoint = env.inngaaendeJournalUrl,
-                    service = BehandleInngaaendeJournalV1::class.java
-                )
-
-                if (env.allowInsecureSoapRequests) {
-                    stsClient.configureFor(port, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
-                } else {
-                    stsClient.configureFor(port)
-                }
-
-                JoarkClient(port)
-            }
-            person {
-                val port = Clients.createServicePort(
-                    endpoint = env.personUrl,
-                    service = PersonV3::class.java
-                )
-
-                if (env.allowInsecureSoapRequests) {
-                    stsClient.configureFor(port, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
-                } else {
-                    stsClient.configureFor(port)
-                }
-
-                PersonClientSoap(port)
-            }
+            joark(joarkClient)
+            person(personClient)
         }
 
         get("/isAlive") {

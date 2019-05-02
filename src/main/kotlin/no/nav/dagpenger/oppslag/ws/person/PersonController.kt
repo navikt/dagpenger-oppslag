@@ -9,8 +9,7 @@ import io.ktor.routing.post
 import no.nav.dagpenger.oppslag.Failure
 import no.nav.dagpenger.oppslag.Success
 
-fun Route.person(factory: () -> PersonClientSoap) {
-    val personClient: PersonClientSoap by lazy(factory)
+fun Route.person(personClient: PersonClientSoap) {
     post("api/person/geografisk-tilknytning") {
         val json = call.receive<GeografiskTilknytningRequest>()
 
@@ -20,6 +19,19 @@ fun Route.person(factory: () -> PersonClientSoap) {
             is Failure -> call.respond(HttpStatusCode.InternalServerError, "Error")
         }
     }
+
+    post("api/person/name") {
+        val request = call.receive<PersonNameRequest>()
+
+        val oppslagResult = personClient.getName(request.fødselsnummer)
+
+        when (oppslagResult) {
+            is Success<*> -> call.respond(oppslagResult.data!!)
+            is Failure -> call.respond(HttpStatusCode.InternalServerError, "Error")
+        }
+    }
 }
 
 data class GeografiskTilknytningRequest(val fødselsnummer: String)
+
+data class PersonNameRequest(val fødselsnummer: String)
