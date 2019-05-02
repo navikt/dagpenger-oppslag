@@ -9,10 +9,10 @@ import io.ktor.routing.post
 import no.nav.dagpenger.oppslag.Failure
 import no.nav.dagpenger.oppslag.Success
 
-fun Route.joark(joarkClient: () -> JoarkClient) {
+fun Route.joark(joarkClient: JoarkClient) {
     post("api/joark/ferdigstill") {
         val request = call.receive<JoarkFerdigstillRequest>()
-        val result = joarkClient().ferdigstillJournalføring(request.journalpostId)
+        val result = joarkClient.ferdigstillJournalføring(request.journalpostId)
 
         when (result) {
             is Success<*> -> call.respond(HttpStatusCode.OK)

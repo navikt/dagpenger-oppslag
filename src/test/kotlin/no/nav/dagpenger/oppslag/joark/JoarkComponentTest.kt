@@ -11,6 +11,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import io.mockk.mockk
 import no.nav.dagpenger.oppslag.Environment
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.oppslag
@@ -19,6 +20,13 @@ import no.nav.dagpenger.oppslag.stsStub
 import no.nav.dagpenger.oppslag.withCallId
 import no.nav.dagpenger.oppslag.withSamlAssertion
 import no.nav.dagpenger.oppslag.withSoapAction
+import no.nav.dagpenger.oppslag.ws.Clients
+import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
+import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
+import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
+import no.nav.dagpenger.oppslag.ws.sts.configureFor
+import no.nav.dagpenger.oppslag.ws.sts.stsClient
+import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
@@ -89,7 +97,29 @@ class JoarkComponentTest {
             )
         )
 
-        withTestApplication({ oppslag(env, jwtStub.stubbedJwkProvider()) }) {
+        val stsClient by lazy {
+            stsClient(
+                env.securityTokenServiceEndpointUrl,
+                env.securityTokenUsername to env.securityTokenPassword
+            )
+        }
+
+        val joarkPort = Clients.createServicePort(
+            endpoint = env.inngaaendeJournalUrl,
+            service = BehandleInngaaendeJournalV1::class.java
+        )
+
+        if (env.allowInsecureSoapRequests) {
+            stsClient.configureFor(joarkPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
+        } else {
+            stsClient.configureFor(joarkPort)
+        }
+
+        val joarkClient = JoarkClient(joarkPort)
+
+        val personClient: PersonClientSoap = mockk()
+
+        withTestApplication({ oppslag(env, jwtStub.stubbedJwkProvider(), joarkClient, personClient) }) {
             handleRequest(HttpMethod.Post, "api/joark/ferdigstill") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 addHeader(HttpHeaders.Authorization, "Bearer $token")

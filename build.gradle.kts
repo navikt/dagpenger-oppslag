@@ -35,6 +35,7 @@ val moshiVersion = "1.8.0"
 val prometheusVersion = "0.6.0"
 val junitJupiterVersion = "5.3.1"
 val log4j2Version = "2.11.1"
+val mockkVersion = "1.9.1"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -77,6 +78,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testImplementation("com.github.tomakehurst:wiremock:2.19.0")
+    testImplementation("io.mockk:mockk:$mockkVersion")
 
     testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty") // conflicts with WireMock
