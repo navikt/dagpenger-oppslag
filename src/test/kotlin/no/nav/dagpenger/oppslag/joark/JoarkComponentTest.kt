@@ -91,7 +91,7 @@ class JoarkComponentTest {
                 "SECURITYTOKENSERVICE_URL" to server.baseUrl().plus("/sts"),
                 "SRVDAGPENGER_OPPSLAG_USERNAME" to "stsUsername",
                 "SRVDAGPENGER_OPPSLAG_PASSWORD" to "stsPassword",
-                "BEHANDLEINNGAAENDEJOURNAL_V1_ENDPOINTURL" to server.baseUrl().plus("/joark"),
+                "JOURNALFOERINNGAAENDE_V1_URL" to server.baseUrl().plus("/joark"),
                 "JWT_ISSUER" to "test issuer",
                 "ALLOW_INSECURE_SOAP_REQUESTS" to "true"
             )
