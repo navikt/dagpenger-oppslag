@@ -7,18 +7,7 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
 import org.apache.cxf.ws.addressing.WSAddressingFeature
 import javax.xml.namespace.QName
 
-object Clients {
-    fun <PORT_TYPE> createServicePort(endpoint: String, service: Class<PORT_TYPE>): PORT_TYPE {
-        val factory = JaxWsProxyFactoryBean().apply {
-            address = endpoint
-            serviceClass = service
-            features = listOf(LoggingFeature())
-            outInterceptors.add(CallIdInterceptor())
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        return factory.create() as PORT_TYPE
-    }
+object SoapClients {
 
     fun PersonV3(serviceUrl: String): PersonV3 {
         return createServicePort(serviceUrl,

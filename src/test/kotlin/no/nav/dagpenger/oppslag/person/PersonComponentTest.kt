@@ -20,13 +20,12 @@ import no.nav.dagpenger.oppslag.stsStub
 import no.nav.dagpenger.oppslag.withCallId
 import no.nav.dagpenger.oppslag.withSamlAssertion
 import no.nav.dagpenger.oppslag.withSoapAction
-import no.nav.dagpenger.oppslag.ws.Clients
+import no.nav.dagpenger.oppslag.ws.SoapClients
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
 import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
 import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.dagpenger.oppslag.ws.sts.stsClient
-import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
@@ -89,10 +88,7 @@ class PersonComponentTest {
 
         val joarkClient: JoarkClient = mockk()
 
-        val personPort = Clients.createServicePort(
-            endpoint = env.personUrl,
-            service = PersonV3::class.java
-        )
+        val personPort = SoapClients.PersonV3(env.personUrl)
 
         if (env.allowInsecureSoapRequests) {
             stsClient.configureFor(personPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)

@@ -29,7 +29,7 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KotlinLogging
-import no.nav.dagpenger.oppslag.ws.Clients
+import no.nav.dagpenger.oppslag.ws.SoapClients
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
 import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
@@ -37,7 +37,6 @@ import no.nav.dagpenger.oppslag.ws.person.person
 import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
 import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.dagpenger.oppslag.ws.sts.stsClient
-import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import java.net.URI
 import java.net.URL
 import java.util.concurrent.TimeUnit
@@ -66,7 +65,7 @@ fun main() {
 
     val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
 
-    val personPort = Clients.PersonV3(env.personUrl)
+    val personPort = SoapClients.PersonV3(env.personUrl)
     val personClient = PersonClientSoap(personPort)
 
     if (env.allowInsecureSoapRequests) {
