@@ -26,7 +26,7 @@ sourceSets {
 }
 
 val confluentVersion = "4.1.2"
-val cxfVersion = "3.2.7"
+val cxfVersion = "3.3.1"
 val fuelVersion = "2.1.0"
 val kafkaVersion = "2.0.1"
 val kotlinLoggingVersion = "1.6.22"
@@ -57,6 +57,7 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
+    implementation("javax.activation:activation:1.1.1")
     testCompile("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
 
     compile("io.ktor:ktor-server-netty:$ktorVersion")
@@ -103,7 +104,6 @@ java {
 val wsdlDir = "$projectDir/src/main/resources/wsdl"
 val wsdlsToGenerate = listOf(
         "$wsdlDir/arena/Binding.wsdl",
-        "$wsdlDir/inngaaendejournal/Binding.wsdl",
         "$wsdlDir/person/Binding.wsdl",
         "$wsdlDir/arbeidsfordeling/Binding.wsdl",
         "$wsdlDir/hentsak/arenaSakVedtakService.wsdl")

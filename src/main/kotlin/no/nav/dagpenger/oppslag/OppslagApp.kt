@@ -37,7 +37,6 @@ import no.nav.dagpenger.oppslag.ws.person.person
 import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
 import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.dagpenger.oppslag.ws.sts.stsClient
-import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import java.net.URI
 import java.net.URL
@@ -65,11 +64,7 @@ fun main() {
         )
     }
 
-    val joarkPort = Clients.createServicePort(
-        endpoint = env.inngaaendeJournalUrl,
-        service = BehandleInngaaendeJournalV1::class.java
-    )
-    val joarkClient = JoarkClient(joarkPort)
+    val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
 
     val personPort = Clients.createServicePort(
         endpoint = env.personUrl,
@@ -78,10 +73,8 @@ fun main() {
     val personClient = PersonClientSoap(personPort)
 
     if (env.allowInsecureSoapRequests) {
-        stsClient.configureFor(joarkPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
         stsClient.configureFor(personPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
     } else {
-        stsClient.configureFor(joarkPort)
         stsClient.configureFor(personPort)
     }
 

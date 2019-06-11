@@ -2,12 +2,11 @@ package no.nav.dagpenger.oppslag.ws.joark
 
 import no.nav.dagpenger.oppslag.Failure
 import no.nav.dagpenger.oppslag.OppslagResult
-import no.nav.dagpenger.oppslag.Success
-import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.binding.BehandleInngaaendeJournalV1
-import no.nav.tjeneste.virksomhet.behandleinngaaendejournal.v1.meldinger.FerdigstillJournalfoeringRequest
 import org.slf4j.LoggerFactory
 
-class JoarkClient(private val inngåendeJournal: BehandleInngaaendeJournalV1) {
+// TODO : Remimplement to rest service https://confluence.adeo.no/display/BOA/ferdigstillJournalpost
+// https://confluence.adeo.no/pages/viewpage.action?pageId=233387943 is legacy
+class JoarkClient(private val inngåendeJournal: String) {
 //    private val counter = Counter.build()
 //        .name("ferdigstill_journalpost")
 //        .labelNames("status")
@@ -17,13 +16,10 @@ class JoarkClient(private val inngåendeJournal: BehandleInngaaendeJournalV1) {
     private val log = LoggerFactory.getLogger("PersonClient")
 
     fun ferdigstillJournalføring(journalpostId: String): OppslagResult {
-        val request = FerdigstillJournalfoeringRequest()
-        request.journalpostId = journalpostId
 
         return try {
-            inngåendeJournal.ferdigstillJournalfoering(request)
+            TODO("NOT IMPLEMENTED")
 //            counter.labels("success").inc()
-            Success(null)
         } catch (ex: Exception) {
             log.error("Error while calling ferdigstillJournalfoering", ex)
 //            counter.labels("failure").inc()
