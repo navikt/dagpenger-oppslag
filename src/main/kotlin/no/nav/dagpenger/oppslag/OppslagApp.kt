@@ -66,10 +66,7 @@ fun main() {
 
     val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
 
-    val personPort = Clients.createServicePort(
-        endpoint = env.personUrl,
-        service = PersonV3::class.java
-    )
+    val personPort = Clients.PersonV3(env.personUrl)
     val personClient = PersonClientSoap(personPort)
 
     if (env.allowInsecureSoapRequests) {

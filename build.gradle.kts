@@ -36,6 +36,9 @@ val prometheusVersion = "0.6.0"
 val junitJupiterVersion = "5.3.1"
 val log4j2Version = "2.11.1"
 val mockkVersion = "1.9.1"
+val tjenestespesifikasjonerVersion = "1.2019.01.16-21.19-afc54bed6f85"
+
+fun tjenestespesifikasjon(name: String) = "no.nav.tjenestespesifikasjoner:$name:$tjenestespesifikasjonerVersion"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -53,11 +56,15 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
     implementation("javax.xml.ws:jaxws-api:2.3.1")
 
+    compile(tjenestespesifikasjon("person-v3-tjenestespesifikasjon"))
+
     implementation("org.apache.cxf:cxf-rt-features-logging:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-frontend-jaxws:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     implementation("javax.activation:activation:1.1.1")
+    compile("no.nav.helse:cxf-prometheus-metrics:dd7d125")
+
     testCompile("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
 
     compile("io.ktor:ktor-server-netty:$ktorVersion")
@@ -104,7 +111,6 @@ java {
 val wsdlDir = "$projectDir/src/main/resources/wsdl"
 val wsdlsToGenerate = listOf(
         "$wsdlDir/arena/Binding.wsdl",
-        "$wsdlDir/person/Binding.wsdl",
         "$wsdlDir/arbeidsfordeling/Binding.wsdl",
         "$wsdlDir/hentsak/arenaSakVedtakService.wsdl")
 

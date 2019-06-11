@@ -68,7 +68,7 @@ class PersonComponentTest {
         WireMock.stubFor(personServiceStub("08078422069")
             .withSamlAssertion("testusername", "theIssuer", "CN=B27 Issuing CA Intern, DC=preprod, DC=local",
                 "digestValue", "signatureValue", "certificateValue")
-            .withCallId("Sett inn call id her")
+            .withCallId()
             .willReturn(WireMock.ok(hentGeografiskTilknytning_response)))
 
         val env = Environment(mapOf(
