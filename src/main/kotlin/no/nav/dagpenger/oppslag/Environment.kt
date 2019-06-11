@@ -11,7 +11,7 @@ data class Environment(val map: Map<String, String> = System.getenv()) {
     val arbeidsfordelingUrl: String by lazyEnvVar("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
     val arenaOppgaveUrl: String by lazyEnvVar("VIRKSOMHET_BEHANDLEARBEIDOGAKTIVITETOPPGAVE_V1_ENDPOINTURL")
     val arenaHentSakerUrl: String by lazyEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")
-    val inngaaendeJournalUrl: String by lazyEnvVar("BEHANDLEINNGAAENDEJOURNAL_V1_ENDPOINTURL")
+    val inngaaendeJournalUrl: String by lazyEnvVar("JOURNALFOERINNGAAENDE_V1_URL")
     val inntektEndpointUrl: String by lazyEnvVar("VIRKSOMHET_INNTEKT_V3_ENDPOINTURL")
 
     val httpPort: Int = 8080

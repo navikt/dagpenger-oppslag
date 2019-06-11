@@ -37,6 +37,8 @@ fasitResources:
     resourceType: restservice
     propertyMap:
       url: JWKS_URL
+  - alias: JournalfoerInngaaende_v1
+    resourceType: restservice
   exposed:
   - alias: dagpenger-oppslag-api
     resourceType: restservice
