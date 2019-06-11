@@ -7,18 +7,27 @@ import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
 import org.apache.cxf.ws.addressing.WSAddressingFeature
 import javax.xml.namespace.QName
 
-object SoapClients {
+object SoapPort {
 
     fun PersonV3(serviceUrl: String): PersonV3 {
-        return createServicePort(serviceUrl,
+        return createServicePort(
+            serviceUrl,
             serviceClazz = PersonV3::class.java,
             wsdl = "wsdl/no/nav/tjeneste/virksomhet/person/v3/Binding.wsdl",
             namespace = "http://nav.no/tjeneste/virksomhet/person/v3/Binding",
             svcName = "Person_v3",
-            portName = "Person_v3Port")
+            portName = "Person_v3Port"
+        )
     }
 
-    private fun <PORT_TYPE> createServicePort(serviceUrl: String, serviceClazz: Class<PORT_TYPE>, wsdl: String, namespace: String, svcName: String, portName: String): PORT_TYPE {
+    private fun <PORT_TYPE> createServicePort(
+        serviceUrl: String,
+        serviceClazz: Class<PORT_TYPE>,
+        wsdl: String,
+        namespace: String,
+        svcName: String,
+        portName: String
+    ): PORT_TYPE {
         val factory = JaxWsProxyFactoryBean().apply {
             address = serviceUrl
             wsdlURL = wsdl

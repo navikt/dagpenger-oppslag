@@ -29,10 +29,10 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KotlinLogging
-import no.nav.dagpenger.oppslag.ws.SoapClients
+import no.nav.dagpenger.oppslag.ws.SoapPort
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
-import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
+import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import no.nav.dagpenger.oppslag.ws.person.person
 import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
 import no.nav.dagpenger.oppslag.ws.sts.configureFor
@@ -65,8 +65,9 @@ fun main() {
 
     val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
 
-    val personPort = SoapClients.PersonV3(env.personUrl)
-    val personClient = PersonClientSoap(personPort)
+    LOGGER.info { "Using person v3 url ${env.personUrl}" }
+    val personPort = SoapPort.PersonV3(env.personUrl)
+    val personClient = PersonClient(personPort)
 
     if (env.allowInsecureSoapRequests) {
         stsClient.configureFor(personPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
@@ -89,7 +90,7 @@ fun Application.oppslag(
     env: Environment,
     jwkProvider: JwkProvider,
     joarkClient: JoarkClient,
-    personClient: PersonClientSoap
+    personClient: PersonClient
 ) {
 
     install(DefaultHeaders)

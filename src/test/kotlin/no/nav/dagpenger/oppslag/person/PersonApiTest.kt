@@ -14,7 +14,7 @@ import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.Success
 import no.nav.dagpenger.oppslag.oppslag
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
-import no.nav.dagpenger.oppslag.ws.person.PersonClientSoap
+import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import no.nav.dagpenger.oppslag.ws.person.PersonNameResponse
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -34,12 +34,12 @@ class PersonApiTest {
     private val jwtStub = JwtStub()
     private val token = jwtStub.createTokenFor("srvdp-inntekt-api")
 
-    private val personClientSoapMock: PersonClientSoap = mockk()
+    private val personClientMock: PersonClient = mockk()
     private val joarkClientSoapMock: JoarkClient = mockk()
 
     init {
         every {
-            personClientSoapMock.getName(any())
+            personClientMock.getName(any())
         } returns Success(
             PersonNameResponse(
                 etternavn = "etternavntest",
@@ -78,7 +78,7 @@ class PersonApiTest {
         val env = Environment(mapOf("JWT_ISSUER" to "test issuer"))
 
         withTestApplication({
-            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientSoapMock))
+            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientMock))
         }) { callback() }
     }
 }

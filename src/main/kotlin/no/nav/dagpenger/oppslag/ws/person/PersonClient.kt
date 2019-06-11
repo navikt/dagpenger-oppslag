@@ -10,9 +10,9 @@ import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentGeografiskTilknytningR
 import no.nav.tjeneste.virksomhet.person.v3.meldinger.HentPersonRequest
 import org.slf4j.LoggerFactory
 
-class PersonClientSoap(private val person: PersonV3) {
+class PersonClient(private val person: PersonV3) {
 
-    private val log = LoggerFactory.getLogger(PersonClientSoap::class.java)
+    private val log = LoggerFactory.getLogger(PersonClient::class.java)
 
     fun getGeografiskTilknytning(fødselsnummer: String): OppslagResult {
         val request = HentGeografiskTilknytningRequest()

@@ -9,7 +9,7 @@ import io.ktor.routing.post
 import no.nav.dagpenger.oppslag.Failure
 import no.nav.dagpenger.oppslag.Success
 
-fun Route.person(personClient: PersonClientSoap) {
+fun Route.person(personClient: PersonClient) {
     post("api/person/geografisk-tilknytning") {
         val json = call.receive<GeografiskTilknytningRequest>()
 
