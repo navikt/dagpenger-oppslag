@@ -1,11 +1,13 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 
 plugins {
     id("application")
     kotlin("jvm") version "1.3.21"
     id("com.diffplug.gradle.spotless") version "3.13.0"
-    id("com.github.johnrengelman.shadow") version "4.0.3"
+    id("com.github.johnrengelman.shadow") version "4.0.4"
 }
 
 repositories {
@@ -116,6 +118,17 @@ val wsdlsToGenerate = listOf(
 
 val generatedDir = "$projectDir/build/generated-sources"
 
+tasks.withType<ShadowJar> {
+    mergeServiceFiles()
+
+    // Make sure the cxf service files are handled correctly so that the SOAP services work.
+    // Ref https://stackoverflow.com/questions/45005287/serviceconstructionexception-when-creating-a-cxf-web-service-client-scalajava
+    transform(ServiceFileTransformer::class.java) {
+        setPath("META-INF/cxf")
+        include("bus-extensions.txt")
+    }
+}
+
 tasks {
     register("wsimport") {
         inputs.files(wsdlsToGenerate)
@@ -133,6 +146,7 @@ tasks {
         }
     }
 }
+
 tasks.getByName("compileKotlin").dependsOn("wsimport")
 
 tasks.withType<Test> {

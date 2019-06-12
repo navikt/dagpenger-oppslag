@@ -65,7 +65,6 @@ fun main() {
 
     val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
 
-    LOGGER.info { "Using person v3 url ${env.personUrl}" }
     val personPort = SoapPort.PersonV3(env.personUrl)
     val personClient = PersonClient(personPort)
 
