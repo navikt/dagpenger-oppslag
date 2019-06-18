@@ -68,6 +68,6 @@ data class GeografiskTilknytningResponse(
 data class PersonNameResponse(
     val etternavn: String,
     val fornavn: String,
-    val mellomnavn: String,
+    val mellomnavn: String?,
     val sammensattNavn: String
 )
