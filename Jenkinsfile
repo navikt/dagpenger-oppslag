@@ -74,5 +74,13 @@ pipeline {
         }
       }
     }
+
+      stage('Deploy to production') {
+          steps {
+              script {
+                  response = naisDeploy.createNaisAutodeployment(env.APPLICATION_NAME, env.VERSION, "p", env.ZONE, env.NAMESPACE, "")
+              }
+          }
+      }
   }
 }
