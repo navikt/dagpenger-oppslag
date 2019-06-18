@@ -75,7 +75,7 @@ class AktorRegisterApiTest {
     fun `Returns 404 if norsk ident is not found`() {
         val testAktorId = "1234567891234"
         WireMock.stubFor(
-                WireMock.get(WireMock.urlEqualTo("//api/v1/identer?gjeldende=true"))
+                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
                         .withHeader("Nav-Personidenter", WireMock.equalTo(testAktorId))
                         .willReturn(WireMock.aResponse().withBody(validJsonBodyWithoutNorskIdent))
         )
@@ -97,7 +97,7 @@ class AktorRegisterApiTest {
     fun `Returns norsk ident if found`() {
         val testAktorId = "1234567891234"
         WireMock.stubFor(
-                WireMock.get(WireMock.urlEqualTo("//api/v1/identer?gjeldende=true"))
+                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
                         .withHeader("Nav-Personidenter", WireMock.equalTo(testAktorId))
                         .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNorskIdent))
         )

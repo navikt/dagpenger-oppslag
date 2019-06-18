@@ -44,7 +44,7 @@ class AktorRegisterClientTest {
         val testFnr = "12345678912"
 
         WireMock.stubFor(
-                WireMock.get(WireMock.urlEqualTo("//api/v1/identer?gjeldende=true"))
+                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
                         .withHeader("Nav-Personidenter", WireMock.equalTo(testAktørId))
                         .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNoNorwegianIdent))
         )
@@ -65,7 +65,7 @@ class AktorRegisterClientTest {
         val testFnr = "12345678912"
 
         WireMock.stubFor(
-                WireMock.get(WireMock.urlEqualTo("//api/v1/identer?gjeldende=true"))
+                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
                         .withHeader("Nav-Personidenter", WireMock.equalTo(testAktørId))
                         .willReturn(WireMock.aResponse().withBody(validJsonBody))
         )
