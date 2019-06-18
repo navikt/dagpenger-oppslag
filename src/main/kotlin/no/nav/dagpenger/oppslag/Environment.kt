@@ -8,6 +8,7 @@ data class Environment(val map: Map<String, String> = System.getenv()) {
     val securityTokenPassword: String by lazyEnvVar("SRVDAGPENGER_OPPSLAG_PASSWORD")
     val securityTokenServiceEndpointUrl: String by lazyEnvVar("SECURITYTOKENSERVICE_URL")
     val personUrl: String by lazyEnvVar("VIRKSOMHET_PERSON_V3_ENDPOINTURL")
+    val aktorOppslagUrl: String by lazyEnvVar("AKTOR_URL")
     val arbeidsfordelingUrl: String by lazyEnvVar("VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL")
     val arenaOppgaveUrl: String by lazyEnvVar("VIRKSOMHET_BEHANDLEARBEIDOGAKTIVITETOPPGAVE_V1_ENDPOINTURL")
     val arenaHentSakerUrl: String by lazyEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")

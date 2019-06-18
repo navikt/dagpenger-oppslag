@@ -29,7 +29,10 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KotlinLogging
+import no.nav.dagpenger.oidc.StsOidcClient
 import no.nav.dagpenger.oppslag.ws.SoapPort
+import no.nav.dagpenger.oppslag.ws.aktor.AktorRegisterHttpClient
+import no.nav.dagpenger.oppslag.ws.aktor.aktorRegister
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
@@ -63,7 +66,13 @@ fun main() {
         )
     }
 
+    val oidcClient by lazy {
+        StsOidcClient(env.securityTokenServiceEndpointUrl, env.securityTokenUsername, env.securityTokenPassword)
+    }
+
     val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
+
+    val aktorRegisterClient = AktorRegisterHttpClient(env.aktorOppslagUrl, oidcClient)
 
     val personPort = SoapPort.PersonV3(env.personUrl)
     val personClient = PersonClient(personPort)
@@ -75,7 +84,7 @@ fun main() {
     }
 
     val app = embeddedServer(Netty, 8080) {
-        oppslag(env, jwkProvider, joarkClient, personClient)
+        oppslag(env, jwkProvider, joarkClient, personClient, aktorRegisterClient)
     }
 
     app.start(wait = false)
@@ -89,7 +98,8 @@ fun Application.oppslag(
     env: Environment,
     jwkProvider: JwkProvider,
     joarkClient: JoarkClient,
-    personClient: PersonClient
+    personClient: PersonClient,
+    aktorRegisterClient: AktorRegisterHttpClient
 ) {
 
     install(DefaultHeaders)
@@ -125,17 +135,11 @@ fun Application.oppslag(
         }
     }
 
-    val stsClient by lazy {
-        stsClient(
-            env.securityTokenServiceEndpointUrl,
-            env.securityTokenUsername to env.securityTokenPassword
-        )
-    }
-
     routing {
         authenticate {
             joark(joarkClient)
             person(personClient)
+            aktorRegister(aktorRegisterClient)
         }
 
         get("/isAlive") {

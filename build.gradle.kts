@@ -5,7 +5,7 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransf
 
 plugins {
     id("application")
-    kotlin("jvm") version "1.3.21"
+    kotlin("jvm") version "1.3.31"
     id("com.diffplug.gradle.spotless") version "3.13.0"
     id("com.github.johnrengelman.shadow") version "4.0.4"
 }
@@ -15,6 +15,7 @@ repositories {
     maven("https://dl.bintray.com/kotlin/ktor/")
     maven("https://dl.bintray.com/kotlin/kotlinx")
     maven("https://dl.bintray.com/kittinunf/maven")
+    maven("https://jitpack.io")
 }
 
 application {
@@ -27,15 +28,16 @@ sourceSets {
     getByName("test").java.srcDirs("src/test/kotlin")
 }
 
-val confluentVersion = "4.1.2"
+val confluentVersion = "5.2.1"
 val cxfVersion = "3.3.1"
+val dpBibliotekerVersion = "2019.05.21-15.46.697023d907a7"
 val fuelVersion = "2.1.0"
-val kafkaVersion = "2.0.1"
+val kafkaVersion = "2.2.1"
 val kotlinLoggingVersion = "1.6.22"
 val ktorVersion = "1.0.0"
 val moshiVersion = "1.8.0"
 val prometheusVersion = "0.6.0"
-val junitJupiterVersion = "5.3.1"
+val junitJupiterVersion = "5.4.1"
 val log4j2Version = "2.11.1"
 val mockkVersion = "1.9.1"
 val tjenestespesifikasjonerVersion = "1.2019.01.16-21.19-afc54bed6f85"
@@ -46,6 +48,7 @@ dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
+    implementation("com.github.kittinunf.fuel:fuel-moshi:$fuelVersion")
     implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
 
     implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
@@ -65,13 +68,13 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-ws-policy:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     implementation("javax.activation:activation:1.1.1")
+    implementation("com.github.navikt.dp-biblioteker:sts-klient:$dpBibliotekerVersion")
     compile("no.nav.helse:cxf-prometheus-metrics:dd7d125")
 
     testCompile("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
 
     compile("io.ktor:ktor-server-netty:$ktorVersion")
     compile("io.ktor:ktor-auth-jwt:$ktorVersion")
-    compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
     compile("com.squareup.okio:okio:2.1.0")
     compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
 
