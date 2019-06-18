@@ -34,7 +34,7 @@ val dpBibliotekerVersion = "2019.05.21-15.46.697023d907a7"
 val fuelVersion = "2.1.0"
 val kafkaVersion = "2.2.1"
 val kotlinLoggingVersion = "1.6.22"
-val ktorVersion = "1.0.0"
+val ktorVersion = "1.2.0"
 val moshiVersion = "1.8.0"
 val prometheusVersion = "0.6.0"
 val junitJupiterVersion = "5.4.1"
@@ -75,6 +75,7 @@ dependencies {
 
     compile("io.ktor:ktor-server-netty:$ktorVersion")
     compile("io.ktor:ktor-auth-jwt:$ktorVersion")
+    compile("io.ktor:ktor-auth:$ktorVersion")
     compile("com.squareup.okio:okio:2.1.0")
     compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
 

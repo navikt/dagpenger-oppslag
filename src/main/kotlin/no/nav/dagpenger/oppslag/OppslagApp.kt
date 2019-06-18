@@ -10,14 +10,17 @@ import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
+import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
+import io.ktor.auth.parseAuthorizationHeader
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.request.authorization
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.response.respondTextWriter
@@ -123,6 +126,11 @@ fun Application.oppslag(
         jwt {
             realm = "Dagpenger Oppslag"
             verifier(jwkProvider, env.jwtIssuer)
+            authHeader { call ->
+                call.request.cookies["ID_token"]?.let {
+                    HttpAuthHeader.Single("Bearer", it)
+                } ?: call.request.parseAuthorizationHeader()
+            }
             validate { credentials ->
                 if (credentials.payload.subject in authorizedUsers) {
                     log.info("authorization ok")
