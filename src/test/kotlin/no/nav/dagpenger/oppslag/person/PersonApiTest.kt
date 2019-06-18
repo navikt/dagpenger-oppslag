@@ -13,6 +13,7 @@ import no.nav.dagpenger.oppslag.Environment
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.Success
 import no.nav.dagpenger.oppslag.oppslag
+import no.nav.dagpenger.oppslag.ws.aktor.AktorRegisterHttpClient
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import no.nav.dagpenger.oppslag.ws.person.PersonNameResponse
@@ -36,6 +37,7 @@ class PersonApiTest {
 
     private val personClientMock: PersonClient = mockk()
     private val joarkClientSoapMock: JoarkClient = mockk()
+    private val aktorRegisterHttpClient: AktorRegisterHttpClient = mockk()
 
     init {
         every {
@@ -78,7 +80,7 @@ class PersonApiTest {
         val env = Environment(mapOf("JWT_ISSUER" to "test issuer"))
 
         withTestApplication({
-            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientMock))
+            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientMock, aktorRegisterHttpClient))
         }) { callback() }
     }
 }

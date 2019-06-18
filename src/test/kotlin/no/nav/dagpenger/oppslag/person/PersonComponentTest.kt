@@ -21,6 +21,7 @@ import no.nav.dagpenger.oppslag.withCallId
 import no.nav.dagpenger.oppslag.withSamlAssertion
 import no.nav.dagpenger.oppslag.withSoapAction
 import no.nav.dagpenger.oppslag.ws.SoapPort
+import no.nav.dagpenger.oppslag.ws.aktor.AktorRegisterHttpClient
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
@@ -87,6 +88,7 @@ class PersonComponentTest {
         }
 
         val joarkClient: JoarkClient = mockk()
+        val aktorRegisterHttpClient = mockk<AktorRegisterHttpClient>()
 
         val personPort = SoapPort.PersonV3(env.personUrl)
 
@@ -98,7 +100,7 @@ class PersonComponentTest {
 
         val personClient = PersonClient(personPort)
 
-        withTestApplication({ oppslag(env, jwtStub.stubbedJwkProvider(), joarkClient, personClient) }) {
+        withTestApplication({ oppslag(env, jwtStub.stubbedJwkProvider(), joarkClient, personClient, aktorRegisterHttpClient) }) {
             handleRequest(HttpMethod.Post, "api/person/geografisk-tilknytning") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 addHeader(HttpHeaders.Authorization, "Bearer $token")

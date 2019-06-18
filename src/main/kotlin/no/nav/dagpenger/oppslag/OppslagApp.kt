@@ -10,14 +10,17 @@ import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
+import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
+import io.ktor.auth.parseAuthorizationHeader
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.request.authorization
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.response.respondTextWriter
@@ -29,7 +32,10 @@ import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KotlinLogging
+import no.nav.dagpenger.oidc.StsOidcClient
 import no.nav.dagpenger.oppslag.ws.SoapPort
+import no.nav.dagpenger.oppslag.ws.aktor.AktorRegisterHttpClient
+import no.nav.dagpenger.oppslag.ws.aktor.aktorRegister
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
@@ -63,7 +69,13 @@ fun main() {
         )
     }
 
+    val oidcClient by lazy {
+        StsOidcClient(env.securityTokenServiceEndpointUrl, env.securityTokenUsername, env.securityTokenPassword)
+    }
+
     val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
+
+    val aktorRegisterClient = AktorRegisterHttpClient(env.aktorOppslagUrl, oidcClient)
 
     val personPort = SoapPort.PersonV3(env.personUrl)
     val personClient = PersonClient(personPort)
@@ -75,7 +87,7 @@ fun main() {
     }
 
     val app = embeddedServer(Netty, 8080) {
-        oppslag(env, jwkProvider, joarkClient, personClient)
+        oppslag(env, jwkProvider, joarkClient, personClient, aktorRegisterClient)
     }
 
     app.start(wait = false)
@@ -89,7 +101,8 @@ fun Application.oppslag(
     env: Environment,
     jwkProvider: JwkProvider,
     joarkClient: JoarkClient,
-    personClient: PersonClient
+    personClient: PersonClient,
+    aktorRegisterClient: AktorRegisterHttpClient
 ) {
 
     install(DefaultHeaders)
@@ -113,6 +126,11 @@ fun Application.oppslag(
         jwt {
             realm = "Dagpenger Oppslag"
             verifier(jwkProvider, env.jwtIssuer)
+            authHeader { call ->
+                call.request.cookies["ID_token"]?.let {
+                    HttpAuthHeader.Single("Bearer", it)
+                } ?: call.request.parseAuthorizationHeader()
+            }
             validate { credentials ->
                 if (credentials.payload.subject in authorizedUsers) {
                     log.info("authorization ok")
@@ -125,17 +143,11 @@ fun Application.oppslag(
         }
     }
 
-    val stsClient by lazy {
-        stsClient(
-            env.securityTokenServiceEndpointUrl,
-            env.securityTokenUsername to env.securityTokenPassword
-        )
-    }
-
     routing {
         authenticate {
             joark(joarkClient)
             person(personClient)
+            aktorRegister(aktorRegisterClient)
         }
 
         get("/isAlive") {
