@@ -5,8 +5,12 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.dagpenger.oidc.OidcClient
 import no.nav.dagpenger.oidc.OidcToken
-import org.junit.jupiter.api.*
-import java.util.*
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class AktorRegisterClientTest {
     companion object {
@@ -54,7 +58,6 @@ class AktorRegisterClientTest {
         val responseFnr = aktørregisterHttpClient.gjeldendeNorskIdent(testAktørId)
 
         Assertions.assertNull(responseFnr)
-
     }
     @Test
     fun `fetch fnr on 200 ok`() {

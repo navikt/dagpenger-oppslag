@@ -46,7 +46,6 @@ class AktorRegisterApiTest {
         fun stop() {
             server.stop()
         }
-
     }
 
     @BeforeEach
@@ -92,7 +91,6 @@ class AktorRegisterApiTest {
                 assertEquals(HttpStatusCode.NotFound, response.status())
             }
         }
-
     }
 
     @Test
@@ -160,4 +158,3 @@ class AktorRegisterApiTest {
         }) { callback() }
     }
 }
-

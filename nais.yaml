@@ -39,6 +39,10 @@ fasitResources:
       url: JWKS_URL
   - alias: JournalfoerInngaaende_v1
     resourceType: restservice
+  - alias: aktoerregister.api
+    resourceType: restservice
+    propertyMap:
+      url: AKTOR_URL
   exposed:
   - alias: dagpenger-oppslag-api
     resourceType: restservice
