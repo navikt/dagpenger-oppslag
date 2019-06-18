@@ -69,7 +69,7 @@ fun main() {
     }
 
     val oidcClient by lazy {
-        StsOidcClient(env.securityTokenServiceEndpointUrl, env.securityTokenUsername, env.securityTokenPassword)
+        StsOidcClient(env.jwksUrl, env.securityTokenUsername, env.securityTokenPassword)
     }
 
     val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
