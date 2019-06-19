@@ -30,7 +30,7 @@ sourceSets {
 
 val confluentVersion = "5.2.1"
 val cxfVersion = "3.3.1"
-val dpBibliotekerVersion = "2019.05.21-15.46.697023d907a7"
+val dpBibliotekerVersion = "2019.06.19-09.38.5466af242e44"
 val fuelVersion = "2.1.0"
 val kafkaVersion = "2.2.1"
 val kotlinLoggingVersion = "1.6.22"
