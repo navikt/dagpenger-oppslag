@@ -47,3 +47,4 @@ fasitResources:
   - alias: dagpenger-oppslag-api
     resourceType: restservice
     path: /api
+webproxy: true
