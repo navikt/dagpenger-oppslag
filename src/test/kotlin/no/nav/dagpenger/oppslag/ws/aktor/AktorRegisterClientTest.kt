@@ -41,7 +41,6 @@ class AktorRegisterClientTest {
     @Test
     fun `no fnr in response from identer call`() {
         val testAktørId = "1234567891234"
-        val testFnr = "12345678912"
 
         WireMock.stubFor(
                 WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))

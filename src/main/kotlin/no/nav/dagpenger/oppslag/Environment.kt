@@ -14,6 +14,9 @@ data class Environment(val map: Map<String, String> = System.getenv()) {
     val arenaHentSakerUrl: String by lazyEnvVar("DAGPENGER_ARENA_HENTSAKER_URL")
     val inngaaendeJournalUrl: String by lazyEnvVar("JOURNALFOERINNGAAENDE_V1_URL")
     val inntektEndpointUrl: String by lazyEnvVar("VIRKSOMHET_INNTEKT_V3_ENDPOINTURL")
+    val enhetsRegisterUrl: String by lazyEnvVar(key = "ENHETSREGISTERET_URL",
+        defaultValue = "https://data.brreg.no/enhetsregisteret/api",
+        mapper = { v -> v })
 
     val httpPort: Int = 8080
     val jwksUrl: String by lazyEnvVar("JWKS_URL")

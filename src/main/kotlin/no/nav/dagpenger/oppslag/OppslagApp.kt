@@ -35,6 +35,8 @@ import no.nav.dagpenger.oidc.StsOidcClient
 import no.nav.dagpenger.oppslag.ws.SoapPort
 import no.nav.dagpenger.oppslag.ws.aktor.AktorRegisterHttpClient
 import no.nav.dagpenger.oppslag.ws.aktor.aktorRegister
+import no.nav.dagpenger.oppslag.ws.brreg.enhetsregister.EnhetsRegisteretHttpClient
+import no.nav.dagpenger.oppslag.ws.brreg.enhetsregister.enhetRegister
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
@@ -76,6 +78,8 @@ fun main() {
 
     val aktorRegisterClient = AktorRegisterHttpClient(env.aktorOppslagUrl, oidcClient)
 
+    val enhetsRegisterClient = EnhetsRegisteretHttpClient(env.enhetsRegisterUrl)
+
     val personPort = SoapPort.PersonV3(env.personUrl)
     val personClient = PersonClient(personPort)
 
@@ -86,7 +90,7 @@ fun main() {
     }
 
     val app = embeddedServer(Netty, 8080) {
-        oppslag(env, jwkProvider, joarkClient, personClient, aktorRegisterClient)
+        oppslag(env, jwkProvider, joarkClient, personClient, aktorRegisterClient, enhetsRegisterClient)
     }
 
     app.start(wait = false)
@@ -101,7 +105,8 @@ fun Application.oppslag(
     jwkProvider: JwkProvider,
     joarkClient: JoarkClient,
     personClient: PersonClient,
-    aktorRegisterClient: AktorRegisterHttpClient
+    aktorRegisterClient: AktorRegisterHttpClient,
+    enhetRegisterClient: EnhetsRegisteretHttpClient
 ) {
 
     install(DefaultHeaders)
@@ -147,6 +152,7 @@ fun Application.oppslag(
             joark(joarkClient)
             person(personClient)
             aktorRegister(aktorRegisterClient)
+            enhetRegister(enhetRegisterClient)
         }
 
         get("/isAlive") {
