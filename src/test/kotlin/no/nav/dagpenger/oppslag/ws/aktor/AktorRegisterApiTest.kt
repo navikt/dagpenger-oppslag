@@ -16,6 +16,7 @@ import no.nav.dagpenger.oidc.StsOidcClient
 import no.nav.dagpenger.oppslag.Environment
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.oppslag
+import no.nav.dagpenger.oppslag.ws.brreg.enhetsregister.EnhetsRegisteretHttpClient
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import org.junit.jupiter.api.AfterAll
@@ -29,6 +30,7 @@ import java.util.UUID
 class AktorRegisterApiTest {
     val joarkClientSoapMock = mockk<JoarkClient>()
     val personClientMock = mockk<PersonClient>()
+    val enhetClientMock = mockk<EnhetsRegisteretHttpClient>()
     val jwtStub = JwtStub()
     private val token = jwtStub.createTokenFor("srvdp-inntekt-api")
 
@@ -154,7 +156,7 @@ class AktorRegisterApiTest {
         val env = Environment(mapOf("JWT_ISSUER" to "test issuer"))
 
         withTestApplication({
-            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientMock, aktorRegisterHttpClient))
+            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientMock, aktorRegisterHttpClient, enhetClientMock))
         }) { callback() }
     }
 }

@@ -20,6 +20,7 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.response.respondTextWriter
@@ -27,6 +28,9 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.micrometer.core.instrument.Clock
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
@@ -35,6 +39,8 @@ import no.nav.dagpenger.oidc.StsOidcClient
 import no.nav.dagpenger.oppslag.ws.SoapPort
 import no.nav.dagpenger.oppslag.ws.aktor.AktorRegisterHttpClient
 import no.nav.dagpenger.oppslag.ws.aktor.aktorRegister
+import no.nav.dagpenger.oppslag.ws.brreg.enhetsregister.EnhetsRegisteretHttpClient
+import no.nav.dagpenger.oppslag.ws.brreg.enhetsregister.enhetRegister
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.joark.joark
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
@@ -76,6 +82,8 @@ fun main() {
 
     val aktorRegisterClient = AktorRegisterHttpClient(env.aktorOppslagUrl, oidcClient)
 
+    val enhetsRegisterClient = EnhetsRegisteretHttpClient(env.enhetsRegisterUrl)
+
     val personPort = SoapPort.PersonV3(env.personUrl)
     val personClient = PersonClient(personPort)
 
@@ -86,7 +94,7 @@ fun main() {
     }
 
     val app = embeddedServer(Netty, 8080) {
-        oppslag(env, jwkProvider, joarkClient, personClient, aktorRegisterClient)
+        oppslag(env, jwkProvider, joarkClient, personClient, aktorRegisterClient, enhetsRegisterClient)
     }
 
     app.start(wait = false)
@@ -101,11 +109,15 @@ fun Application.oppslag(
     jwkProvider: JwkProvider,
     joarkClient: JoarkClient,
     personClient: PersonClient,
-    aktorRegisterClient: AktorRegisterHttpClient
+    aktorRegisterClient: AktorRegisterHttpClient,
+    enhetRegisterClient: EnhetsRegisteretHttpClient
 ) {
 
     install(DefaultHeaders)
     install(CallLogging)
+    install(MicrometerMetrics) {
+        registry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT, CollectorRegistry.defaultRegistry, Clock.SYSTEM)
+    }
     install(ContentNegotiation) {
         moshi(moshiInstance)
     }
@@ -148,7 +160,7 @@ fun Application.oppslag(
             person(personClient)
             aktorRegister(aktorRegisterClient)
         }
-
+        enhetRegister(enhetRegisterClient)
         get("/isAlive") {
             call.respondText("ALIVE", ContentType.Text.Plain)
         }
