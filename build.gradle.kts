@@ -79,6 +79,8 @@ dependencies {
     compile("io.ktor:ktor-auth:$ktorVersion")
     compile("com.squareup.okio:okio:2.1.0")
     compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
+    implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.1.4")
 
     implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
     implementation("javax.xml.ws:jaxws-api:2.3.1")

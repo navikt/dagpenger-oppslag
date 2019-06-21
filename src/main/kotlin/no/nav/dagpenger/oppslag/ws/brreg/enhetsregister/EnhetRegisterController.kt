@@ -25,6 +25,6 @@ fun Route.enhetRegister(enhetRegisterClient: EnhetsRegisteretHttpClient) {
     }
 }
 
-data class Organisation(val orgNr: Long, val orgName: String)
+data class Organisation(val orgNr: Long, val navn: String)
 
 val logger = LoggerFactory.getLogger("EnhetRegister")

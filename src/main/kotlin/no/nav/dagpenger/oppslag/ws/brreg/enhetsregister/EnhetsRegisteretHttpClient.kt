@@ -2,8 +2,15 @@ package no.nav.dagpenger.oppslag.ws.brreg.enhetsregister
 
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.moshi.responseObject
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.Types
+import no.nav.dagpenger.oppslag.moshiInstance
+import no.nav.dagpenger.oppslag.ws.aktor.IdentResponse
 
 class EnhetsRegisteretHttpClient(private val enhetsRegisteretUrl: String) {
+    private val jsonResponseAdapter: JsonAdapter<Map<String, IdentResponse>> = moshiInstance.adapter(
+        Types.newParameterizedType(Map::class.java, String::class.java, IdentResponse::class.java)
+    )
     fun getOrgName(orgNr: String): String {
         val url = "$enhetsRegisteretUrl/enheter/$orgNr"
 
