@@ -1,6 +1,6 @@
 # Dagpenger-oppslag
 
-Bindeledd mellom soap-tjenester og dagpenger-mikrotjenestene
+Bindeledd mellom soap-tjenester og resttjenester og dagpenger-mikrotjenestene
 
 # Komme i gang
 
