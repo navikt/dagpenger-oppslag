@@ -60,6 +60,7 @@ class EnhetsRegisterApiTest {
             }.apply {
                 Assertions.assertTrue(requestHandled)
                 Assertions.assertEquals(HttpStatusCode.NotAcceptable, response.status())
+                Assertions.assertEquals(null, response.headers["Cache-Control"])
             }
         }
     }
@@ -80,6 +81,7 @@ class EnhetsRegisterApiTest {
             }.apply {
                 Assertions.assertTrue(requestHandled)
                 Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                Assertions.assertEquals("max-age=86400", response.headers["Cache-Control"])
             }
         }
     }
@@ -100,6 +102,7 @@ class EnhetsRegisterApiTest {
             }.apply {
                 Assertions.assertTrue(requestHandled)
                 Assertions.assertEquals(HttpStatusCode.NotFound, response.status())
+                Assertions.assertEquals(null, response.headers["Cache-Control"])
             }
         }
     }
