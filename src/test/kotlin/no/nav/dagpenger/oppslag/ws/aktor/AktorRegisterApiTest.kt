@@ -20,6 +20,7 @@ import no.nav.dagpenger.oppslag.ws.brreg.enhetsregister.EnhetsRegisteretHttpClie
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
@@ -69,6 +70,7 @@ class AktorRegisterApiTest {
             }.apply {
                 assertTrue(requestHandled)
                 assertEquals(HttpStatusCode.NotAcceptable, response.status())
+                Assertions.assertEquals(null, response.headers["Cache-Control"])
             }
         }
     }
@@ -91,6 +93,7 @@ class AktorRegisterApiTest {
             }.apply {
                 assertTrue(requestHandled)
                 assertEquals(HttpStatusCode.NotFound, response.status())
+                Assertions.assertEquals(null, response.headers["Cache-Control"])
             }
         }
     }
@@ -113,6 +116,7 @@ class AktorRegisterApiTest {
             }.apply {
                 assertTrue(requestHandled)
                 assertEquals(HttpStatusCode.OK, response.status())
+                Assertions.assertEquals("max-age=86400", response.headers["Cache-Control"])
             }
         }
     }

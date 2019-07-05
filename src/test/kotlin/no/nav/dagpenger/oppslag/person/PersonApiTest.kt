@@ -63,6 +63,7 @@ class PersonApiTest {
         }.apply {
             assertTrue(requestHandled)
             Assertions.assertEquals(HttpStatusCode.OK, response.status())
+            Assertions.assertEquals("max-age=86400", response.headers["Cache-Control"])
         }
     }
 
@@ -75,6 +76,7 @@ class PersonApiTest {
         }.apply {
             assertTrue(requestHandled)
             Assertions.assertEquals(HttpStatusCode.BadRequest, response.status())
+            Assertions.assertEquals(null, response.headers["Cache-Control"])
         }
     }
 
