@@ -59,6 +59,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
     implementation("io.prometheus:simpleclient_common:$prometheusVersion")
     implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_log4j2:$prometheusVersion")
     implementation("javax.xml.ws:jaxws-api:2.3.1")
 
     compile(tjenestespesifikasjon("person-v3-tjenestespesifikasjon"))
