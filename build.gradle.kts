@@ -4,17 +4,24 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 
 plugins {
-    id("application")
-    kotlin("jvm") version "1.3.40"
-    id("com.diffplug.gradle.spotless") version "3.13.0"
-    id("com.github.johnrengelman.shadow") version "4.0.4"
+    application
+    kotlin("jvm") version Kotlin.version
+    id(Spotless.spotless) version Spotless.version
+    id(Shadow.shadow) version Shadow.version
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+apply {
+    plugin(Spotless.spotless)
 }
 
 repositories {
-    mavenCentral()
-    maven("https://dl.bintray.com/kotlin/ktor/")
-    maven("https://dl.bintray.com/kotlin/kotlinx")
-    maven("https://dl.bintray.com/kittinunf/maven")
+    jcenter()
     maven("https://jitpack.io")
 }
 
@@ -23,23 +30,7 @@ application {
     mainClassName = "no.nav.dagpenger.oppslag.OppslagAppKt"
 }
 
-sourceSets {
-    getByName("main").java.srcDirs("src/main/kotlin")
-    getByName("test").java.srcDirs("src/test/kotlin")
-}
-
-val confluentVersion = "5.2.1"
 val cxfVersion = "3.3.1"
-val dpBibliotekerVersion = "2019.06.19-09.38.5466af242e44"
-val fuelVersion = "2.1.0"
-val kafkaVersion = "2.2.1"
-val kotlinLoggingVersion = "1.6.22"
-val ktorVersion = "1.2.0"
-val moshiVersion = "1.8.0"
-val prometheusVersion = "0.6.0"
-val junitJupiterVersion = "5.4.1"
-val log4j2Version = "2.11.1"
-val mockkVersion = "1.9.1"
 val tjenestespesifikasjonerVersion = "1.2019.01.16-21.19-afc54bed6f85"
 
 fun tjenestespesifikasjon(name: String) = "no.nav.tjenestespesifikasjoner:$name:$tjenestespesifikasjonerVersion"
@@ -47,20 +38,39 @@ fun tjenestespesifikasjon(name: String) = "no.nav.tjenestespesifikasjoner:$name:
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("com.github.kittinunf.fuel:fuel-gson:$fuelVersion")
-    implementation("com.github.kittinunf.fuel:fuel-moshi:$fuelVersion")
-    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
+    implementation(Fuel.fuel)
+    implementation(Fuel.fuelMoshi)
 
-    implementation("com.squareup.moshi:moshi-adapters:$moshiVersion")
-    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
-    implementation("com.squareup.moshi:moshi:$moshiVersion")
+    implementation(Moshi.moshi)
+    implementation(Moshi.moshiAdapters)
+    implementation(Moshi.moshiKotlin)
+    implementation(Moshi.moshiKtor)
 
-    implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
-    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
-    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
-    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
-    implementation("io.prometheus:simpleclient_log4j2:$prometheusVersion")
+    implementation(Ktor.server)
+    implementation(Ktor.serverNetty)
+    implementation(Ktor.auth)
+    implementation(Ktor.authJwt)
+    implementation(Ktor.locations)
+    implementation(Ktor.micrometerMetrics)
+
+    implementation(Micrometer.prometheusRegistry)
+
+    implementation(Prometheus.common)
+    implementation(Prometheus.hotspot)
+    implementation(Prometheus.log4j2)
+
+    implementation(Dagpenger.Biblioteker.ktorUtils)
+    implementation(Dagpenger.Biblioteker.stsKlient)
+
+    implementation(Log4j2.api)
+    implementation(Log4j2.core)
+    implementation(Log4j2.slf4j)
+    implementation(Log4j2.Logstash.logstashLayout)
+    implementation(Kotlin.Logging.kotlinLogging)
+
+    // Soap stuff
     implementation("javax.xml.ws:jaxws-api:2.3.1")
+    implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
 
     compile(tjenestespesifikasjon("person-v3-tjenestespesifikasjon"))
 
@@ -70,46 +80,26 @@ dependencies {
     implementation("org.apache.cxf:cxf-rt-ws-security:$cxfVersion")
     implementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
     implementation("javax.activation:activation:1.1.1")
-    implementation("com.github.navikt.dp-biblioteker:sts-klient:$dpBibliotekerVersion")
-    compile("no.nav.helse:cxf-prometheus-metrics:dd7d125")
-
-    testCompile("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
-
-    compile("io.ktor:ktor-server-netty:$ktorVersion")
-    compile("io.ktor:ktor-auth-jwt:$ktorVersion")
-    compile("io.ktor:ktor-auth:$ktorVersion")
-    compile("com.squareup.okio:okio:2.1.0")
-    compile("com.ryanharter.ktor:ktor-moshi:1.0.1")
-    implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
-    implementation("io.micrometer:micrometer-registry-prometheus:1.1.4")
-
-    implementation("com.sun.xml.ws:jaxws-tools:2.3.0.2")
-    implementation("javax.xml.ws:jaxws-api:2.3.1")
-
-    implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
-    implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
-    implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
-    implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
+    implementation("no.nav.helse:cxf-prometheus-metrics:dd7d125")
+    testImplementation("org.apache.cxf:cxf-rt-transports-http:$cxfVersion")
+    // Soap stuff end
 
     testImplementation(kotlin("test"))
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
-    testImplementation("com.github.tomakehurst:wiremock:2.19.0")
-    testImplementation("io.mockk:mockk:$mockkVersion")
-
-    testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
-        exclude(group = "org.eclipse.jetty") // conflicts with WireMock
-    }
+    testImplementation(Ktor.ktorTest)
+    testImplementation(Junit5.api)
+    testImplementation(Junit5.kotlinRunner)
+    testRuntimeOnly(Junit5.engine)
+    testImplementation(Wiremock.standalone)
+    testImplementation(Mockk.mockk)
 }
 
 spotless {
     kotlin {
-        ktlint("0.31.0")
+        ktlint(Klint.version)
     }
     kotlinGradle {
         target("*.gradle.kts", "additionalScripts/*.gradle.kts")
-        ktlint("0.31.0")
+        ktlint(Klint.version)
     }
 }
 
