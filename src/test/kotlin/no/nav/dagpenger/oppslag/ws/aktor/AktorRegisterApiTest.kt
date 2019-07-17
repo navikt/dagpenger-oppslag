@@ -13,14 +13,12 @@ import io.mockk.mockk
 import no.nav.dagpenger.oidc.OidcClient
 import no.nav.dagpenger.oidc.OidcToken
 import no.nav.dagpenger.oidc.StsOidcClient
-import no.nav.dagpenger.oppslag.Environment
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.oppslag
 import no.nav.dagpenger.oppslag.ws.brreg.enhetsregister.EnhetsRegisteretHttpClient
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
@@ -29,10 +27,10 @@ import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class AktorRegisterApiTest {
-    val joarkClientSoapMock = mockk<JoarkClient>()
-    val personClientMock = mockk<PersonClient>()
-    val enhetClientMock = mockk<EnhetsRegisteretHttpClient>()
-    val jwtStub = JwtStub()
+    private val joarkClientSoapMock = mockk<JoarkClient>()
+    private val personClientMock = mockk<PersonClient>()
+    private val enhetClientMock = mockk<EnhetsRegisteretHttpClient>()
+    private val jwtStub = JwtStub()
     private val token = jwtStub.createTokenFor("srvdp-inntekt-api")
 
     companion object {
@@ -70,7 +68,7 @@ class AktorRegisterApiTest {
             }.apply {
                 assertTrue(requestHandled)
                 assertEquals(HttpStatusCode.NotAcceptable, response.status())
-                Assertions.assertEquals(null, response.headers["Cache-Control"])
+                assertEquals(null, response.headers["Cache-Control"])
             }
         }
     }
@@ -79,9 +77,9 @@ class AktorRegisterApiTest {
     fun `Returns 404 if norsk ident is not found`() {
         val testAktorId = "1234567891234"
         WireMock.stubFor(
-                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
-                        .withHeader("Nav-Personidenter", WireMock.equalTo(testAktorId))
-                        .willReturn(WireMock.aResponse().withBody(validJsonBodyWithoutNorskIdent))
+            WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
+                .withHeader("Nav-Personidenter", WireMock.equalTo(testAktorId))
+                .willReturn(WireMock.aResponse().withBody(validJsonBodyWithoutNorskIdent))
         )
 
         val aktorRegisterHttpClient = AktorRegisterHttpClient(server.url(""), DummyOidcClient())
@@ -93,7 +91,7 @@ class AktorRegisterApiTest {
             }.apply {
                 assertTrue(requestHandled)
                 assertEquals(HttpStatusCode.NotFound, response.status())
-                Assertions.assertEquals(null, response.headers["Cache-Control"])
+                assertEquals(null, response.headers["Cache-Control"])
             }
         }
     }
@@ -102,9 +100,9 @@ class AktorRegisterApiTest {
     fun `Returns norsk ident if found`() {
         val testAktorId = "1234567891234"
         WireMock.stubFor(
-                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
-                        .withHeader("Nav-Personidenter", WireMock.equalTo(testAktorId))
-                        .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNorskIdent))
+            WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
+                .withHeader("Nav-Personidenter", WireMock.equalTo(testAktorId))
+                .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNorskIdent))
         )
 
         val aktorRegisterHttpClient = AktorRegisterHttpClient(server.url(""), DummyOidcClient())
@@ -116,12 +114,12 @@ class AktorRegisterApiTest {
             }.apply {
                 assertTrue(requestHandled)
                 assertEquals(HttpStatusCode.OK, response.status())
-                Assertions.assertEquals("max-age=86400", response.headers["Cache-Control"])
+                assertEquals("max-age=86400", response.headers["Cache-Control"])
             }
         }
     }
 
-    val validJsonBodyWithoutNorskIdent = """
+    private val validJsonBodyWithoutNorskIdent = """
         {
             "1234567891234": {
                 "identer": [
@@ -136,7 +134,7 @@ class AktorRegisterApiTest {
         }
     """.trimIndent()
 
-    val validJsonBodyWithNorskIdent = """
+    private val validJsonBodyWithNorskIdent = """
         {
             "1234567891234": {
                 "identer": [
@@ -157,10 +155,17 @@ class AktorRegisterApiTest {
     """.trimIndent()
 
     private fun testApp(aktorRegisterHttpClient: AktorRegisterHttpClient, callback: TestApplicationEngine.() -> Unit) {
-        val env = Environment(mapOf("JWT_ISSUER" to "test issuer"))
+        val jwtIssuer = "test issuer"
 
         withTestApplication({
-            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientMock, aktorRegisterHttpClient, enhetClientMock))
+            (oppslag(
+                aktorRegisterClient = aktorRegisterHttpClient,
+                enhetRegisterClient = enhetClientMock,
+                joarkClient = joarkClientSoapMock,
+                jwkProvider = jwtStub.stubbedJwkProvider(),
+                jwtIssuer = jwtIssuer,
+                personClient = personClientMock
+            ))
         }) { callback() }
     }
 }

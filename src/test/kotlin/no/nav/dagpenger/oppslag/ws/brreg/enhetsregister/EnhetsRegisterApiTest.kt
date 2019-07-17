@@ -10,23 +10,23 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.mockk.mockk
-import no.nav.dagpenger.oppslag.Environment
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.oppslag
 import no.nav.dagpenger.oppslag.ws.aktor.AktorRegisterHttpClient
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class EnhetsRegisterApiTest {
-    val joarkClientSoapMock = mockk<JoarkClient>()
-    val personClientMock = mockk<PersonClient>()
-    val aktorRegisterClientMock = mockk<AktorRegisterHttpClient>()
-    val jwtStub = JwtStub()
+    private val joarkClientSoapMock = mockk<JoarkClient>()
+    private val personClientMock = mockk<PersonClient>()
+    private val aktorRegisterClientMock = mockk<AktorRegisterHttpClient>()
+    private val jwtStub = JwtStub()
     private val token = jwtStub.createTokenFor("srvdp-inntekt-api")
 
     companion object {
@@ -58,9 +58,9 @@ class EnhetsRegisterApiTest {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader(HttpHeaders.Authorization, "Bearer $token")
             }.apply {
-                Assertions.assertTrue(requestHandled)
-                Assertions.assertEquals(HttpStatusCode.NotAcceptable, response.status())
-                Assertions.assertEquals(null, response.headers["Cache-Control"])
+                assertTrue(requestHandled)
+                assertEquals(HttpStatusCode.NotAcceptable, response.status())
+                assertEquals(null, response.headers["Cache-Control"])
             }
         }
     }
@@ -79,9 +79,9 @@ class EnhetsRegisterApiTest {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader(HttpHeaders.Authorization, "Bearer $token")
             }.apply {
-                Assertions.assertTrue(requestHandled)
-                Assertions.assertEquals(HttpStatusCode.OK, response.status())
-                Assertions.assertEquals("max-age=86400", response.headers["Cache-Control"])
+                assertTrue(requestHandled)
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals("max-age=86400", response.headers["Cache-Control"])
             }
         }
     }
@@ -100,14 +100,14 @@ class EnhetsRegisterApiTest {
                 addHeader(HttpHeaders.ContentType, "application/json")
                 addHeader(HttpHeaders.Authorization, "Bearer $token")
             }.apply {
-                Assertions.assertTrue(requestHandled)
-                Assertions.assertEquals(HttpStatusCode.NotFound, response.status())
-                Assertions.assertEquals(null, response.headers["Cache-Control"])
+                assertTrue(requestHandled)
+                assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(null, response.headers["Cache-Control"])
             }
         }
     }
 
-    val validJsonBodyWithNorskOrg = """
+    private val validJsonBodyWithNorskOrg = """
         {"organisasjonsnummer":"974760673",
         "navn":"REGISTERENHETEN I BRØNNØYSUND",
         "organisasjonsform":{"kode":"ORGL",
@@ -142,10 +142,17 @@ class EnhetsRegisterApiTest {
             }""".trimIndent()
 
     private fun testApp(enhetsRegisterClient: EnhetsRegisteretHttpClient, callback: TestApplicationEngine.() -> Unit) {
-        val env = Environment(mapOf("JWT_ISSUER" to "test issuer"))
+        val jwtIssuer = "test issuer"
 
         withTestApplication({
-            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientMock, aktorRegisterClientMock, enhetsRegisterClient))
+            (oppslag(
+                aktorRegisterClient = aktorRegisterClientMock,
+                enhetRegisterClient = enhetsRegisterClient,
+                joarkClient = joarkClientSoapMock,
+                jwkProvider = jwtStub.stubbedJwkProvider(),
+                jwtIssuer = jwtIssuer,
+                personClient = personClientMock
+            ))
         }) { callback() }
     }
 }

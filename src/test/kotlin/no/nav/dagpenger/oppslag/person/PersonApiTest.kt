@@ -9,7 +9,6 @@ import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.mockk.every
 import io.mockk.mockk
-import no.nav.dagpenger.oppslag.Environment
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.Success
 import no.nav.dagpenger.oppslag.oppslag
@@ -18,18 +17,18 @@ import no.nav.dagpenger.oppslag.ws.brreg.enhetsregister.EnhetsRegisteretHttpClie
 import no.nav.dagpenger.oppslag.ws.joark.JoarkClient
 import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import no.nav.dagpenger.oppslag.ws.person.PersonNameResponse
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 
 class PersonApiTest {
-    val validJson = """
+    private val validJson = """
         {
             "fødselsnummer": "12345678912"
         }
         """.trimIndent()
 
-    val jsonMissingFields = """
+    private val jsonMissingFields = """
         {}
         """.trimIndent()
 
@@ -62,8 +61,8 @@ class PersonApiTest {
             setBody(validJson)
         }.apply {
             assertTrue(requestHandled)
-            Assertions.assertEquals(HttpStatusCode.OK, response.status())
-            Assertions.assertEquals("max-age=86400", response.headers["Cache-Control"])
+            assertEquals(HttpStatusCode.OK, response.status())
+            assertEquals("max-age=86400", response.headers["Cache-Control"])
         }
     }
 
@@ -75,16 +74,23 @@ class PersonApiTest {
             setBody(jsonMissingFields)
         }.apply {
             assertTrue(requestHandled)
-            Assertions.assertEquals(HttpStatusCode.BadRequest, response.status())
-            Assertions.assertEquals(null, response.headers["Cache-Control"])
+            assertEquals(HttpStatusCode.BadRequest, response.status())
+            assertEquals(null, response.headers["Cache-Control"])
         }
     }
 
     private fun testApp(callback: TestApplicationEngine.() -> Unit) {
-        val env = Environment(mapOf("JWT_ISSUER" to "test issuer"))
+        val jwtIssuer = "test issuer"
 
         withTestApplication({
-            (oppslag(env, jwtStub.stubbedJwkProvider(), joarkClientSoapMock, personClientMock, aktorRegisterHttpClient, enhetsRegisteretHttpClient))
+            (oppslag(
+                aktorRegisterClient = aktorRegisterHttpClient,
+                enhetRegisterClient = enhetsRegisteretHttpClient,
+                joarkClient = joarkClientSoapMock,
+                jwkProvider = jwtStub.stubbedJwkProvider(),
+                jwtIssuer = jwtIssuer,
+                personClient = personClientMock
+            ))
         }) { callback() }
     }
 }
