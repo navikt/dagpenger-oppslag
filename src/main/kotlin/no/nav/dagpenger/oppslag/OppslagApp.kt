@@ -10,7 +10,6 @@ import io.ktor.application.install
 import io.ktor.application.log
 import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
-import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.auth.parseAuthorizationHeader
@@ -20,6 +19,7 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.StatusPages
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.metrics.micrometer.MicrometerMetrics
 import io.ktor.response.respond
 import io.ktor.response.respondText
@@ -58,43 +58,52 @@ private val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegi
 private val LOGGER = KotlinLogging.logger {}
 
 fun main() {
-    val env = Environment()
+    val config = Configuration()
 
     DefaultExports.initialize()
 
-    val jwkProvider = JwkProviderBuilder(URL(env.jwksUrl))
+    val jwkProvider = JwkProviderBuilder(URL(config.auth.jwksUrl))
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()
 
     val stsClient by lazy {
         stsClient(
-            env.securityTokenServiceEndpointUrl,
-            env.securityTokenUsername to env.securityTokenPassword
+            stsUrl = config.soapSTSClient.endpoint,
+            credentials = config.soapSTSClient.username to config.soapSTSClient.password
         )
     }
 
     val oidcClient by lazy {
-        StsOidcClient(env.jwtIssuer, env.securityTokenUsername, env.securityTokenPassword)
+        StsOidcClient(
+            stsBaseUrl = config.auth.issuer,
+            username = config.auth.username,
+            password = config.auth.password
+        )
     }
 
-    val joarkClient = JoarkClient(env.inngaaendeJournalUrl)
+    val joarkClient = JoarkClient(inngåendeJournal = config.inngaaendeJournalApi.endpoint)
+    val aktorRegisterClient = AktorRegisterHttpClient(baseUrl = config.aktorApi.endpoint, oidcClient = oidcClient)
+    val enhetsRegisterClient = EnhetsRegisteretHttpClient(enhetsRegisteretUrl = config.enhetsregisterApi.endpoint)
 
-    val aktorRegisterClient = AktorRegisterHttpClient(env.aktorOppslagUrl, oidcClient)
-
-    val enhetsRegisterClient = EnhetsRegisteretHttpClient(env.enhetsRegisterUrl)
-
-    val personPort = SoapPort.PersonV3(env.personUrl)
+    val personPort = SoapPort.PersonV3(serviceUrl = config.personApi.endpoint)
     val personClient = PersonClient(personPort)
 
-    if (env.allowInsecureSoapRequests) {
+    if (config.soapSTSClient.allowInsecureSoapRequests) {
         stsClient.configureFor(personPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
     } else {
         stsClient.configureFor(personPort)
     }
 
-    val app = embeddedServer(Netty, 8080) {
-        oppslag(env, jwkProvider, joarkClient, personClient, aktorRegisterClient, enhetsRegisterClient)
+    val app = embeddedServer(Netty, config.application.httpPort) {
+        oppslag(
+            jwkProvider = jwkProvider,
+            jwtIssuer = config.auth.issuer,
+            joarkClient = joarkClient,
+            personClient = personClient,
+            aktorRegisterClient = aktorRegisterClient,
+            enhetRegisterClient = enhetsRegisterClient
+        )
     }
 
     app.start(wait = false)
@@ -105,8 +114,8 @@ fun main() {
 }
 
 fun Application.oppslag(
-    env: Environment,
     jwkProvider: JwkProvider,
+    jwtIssuer: String,
     joarkClient: JoarkClient,
     personClient: PersonClient,
     aktorRegisterClient: AktorRegisterHttpClient,
@@ -135,8 +144,12 @@ fun Application.oppslag(
 
     install(Authentication) {
         jwt {
+            skipWhen { true }
+
             realm = "Dagpenger Oppslag"
-            verifier(jwkProvider, env.jwtIssuer)
+
+            verifier(jwkProvider, jwtIssuer)
+
             authHeader { call ->
                 call.request.cookies["ID_token"]?.let {
                     HttpAuthHeader.Single("Bearer", it)

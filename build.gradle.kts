@@ -52,6 +52,7 @@ dependencies {
     implementation(Ktor.authJwt)
     implementation(Ktor.locations)
     implementation(Ktor.micrometerMetrics)
+    implementation(Konfig.konfig)
 
     implementation(Micrometer.prometheusRegistry)
 

@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  oidc-provider:
+    image: qlik/simple-oidc-provider
+    ports:
+      - 4352:4352
+    environment:
+      - PORT=4352
+
+
