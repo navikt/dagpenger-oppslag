@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+    xmlns:v1="http://nav.no/tjeneste/virksomhet/behandleArbeidOgAktivitetOppgave/v1" 
+    xmlns:ns1="http://nav.no/tjeneste/virksomhet/person/v1/behandleArbeidOgAktivitetOppgave">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <v1:bestillOppgaveResponse>
+            <response>
+                <arenaSakId>42</arenaSakId>
+                <oppgaveId>63</oppgaveId>
+            </response>
+        </v1:bestillOppgaveResponse>
+    </soapenv:Body>
+</soapenv:Envelope>

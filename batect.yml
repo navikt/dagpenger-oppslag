@@ -1,0 +1,82 @@
+project_name: dagpenger-oppslag-service
+
+containers:
+  build-env:
+    image: openjdk:12-jdk-alpine
+    volumes:
+      - local: .
+        container: /code
+        options: cached
+      - local: .gradle-cache
+        container: /home/container-user/.gradle
+        options: cached
+    working_directory: /code
+    environment:
+      GRADLE_OPTS: -Dorg.gradle.daemon=false
+    run_as_current_user:
+      enabled: true
+      home_directory: /home/container-user
+
+  dagpenger-oppslag-service:
+    build_directory: .
+    dependencies:
+      - mockserver
+
+  oidc-provider:
+    image: qlik/simple-oidc-provider
+    environment:
+      REDIRECTS: http://localhost:3000/inntekter/oidc/callback
+      PORT: "4352"
+
+  mockserver:
+    build_directory: ./mocked-services
+    command: ./node_modules/.bin/nodemon -L server.js
+    environment:
+      PORT: "8080"
+    volumes:
+      - local: ./mocked-services/lib
+        container: /usr/src/app/lib
+
+tasks:
+  build:
+    description: Build the application.
+    run:
+      container: build-env
+      command: ./gradlew build
+
+  unitTest:
+    description: Run the unit tests.
+    run:
+      container: build-env
+      command: ./gradlew test
+
+  continuousUnitTest:
+    description: Run the unit tests and then re-run them when any code changes are detected.
+    group: Test tasks
+    run:
+      container: build-env
+      command: ./gradlew --continuous test
+
+  mockserver:
+    description: Run the mock server.
+    run:
+      container: mockserver
+      ports:
+        - local: 8079
+          container: 8080
+
+  app:
+    description: Run the application.
+    group: Test tasks
+    dependencies:
+      - mockserver
+    #prerequisites:
+    #  - build
+    run:
+      container: dagpenger-oppslag-service
+      ports:
+        - local: 8080
+          container: 8080
+      environment:
+        securitytokenservice.url: http://mockserver:8080/sts/authorize
+        virksomhet.person.v3.endpointurl: http://localhost:8079/person

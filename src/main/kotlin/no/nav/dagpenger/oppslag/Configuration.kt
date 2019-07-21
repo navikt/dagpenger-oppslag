@@ -19,22 +19,23 @@ private val defaultProperties = ConfigurationMap(
 private val localProperties = ConfigurationMap(
     mapOf(
         "application.profile" to Profile.LOCAL.toString(),
+        "application.auth.enabled" to false.toString(),
         "srvdagpenger.oppslag.username" to "localhost",
         "srvdagpenger.oppslag.password" to "5432",
-        "securitytokenservice.url" to "http://localhost:8080/castlemock/mock/rest/project/o9jGYV/application/7CvpvM/authorize",
+        "securitytokenservice.url" to "http://localhost:8079/sts/authorize",
 
         "aktor.url" to "",
-        "virksomhet.person.v3.endpointurl" to "http://localhost:8080/castlemock/mock/soap/project/rRm85C/Person_v3Port",
-        "virksomhet.arbeidsfordeling.v1.endpointurl" to "http://localhost:8080/castlemock/mock/soap/project/rRm85C/Arbeidsfordeling_v1Port",
-        "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl" to "http://localhost:8080/castlemock/mock/soap/project/rRm85C/BehandleArbeidOgAktivitetOppgave_v1Port",
-        "dagpenger.arena.hentsaker.url" to "",
-        "journalfoerinngaaende.v1.url" to "http://localhost:8080/castlemock/mock/soap/project/rRm85C/BehandleInngaaendeJournal_v1Port",
-        "virksomhet.inntekt.v3.endpointurl" to "http://localhost:8080/castlemock/mock/rest/project/tSG1DA/application/UantnR/v1/hentinntektliste",
+        "virksomhet.person.v3.endpointurl" to "http://localhost:8079/person",
+        "virksomhet.arbeidsfordeling.v1.endpointurl" to "http://localhost:8079/arbeidsfordeling",
+        "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl" to "http://",
+        "dagpenger.arena.hentsaker.url" to "http://:8080",
+        "journalfoerinngaaende.v1.url" to "http://mockserver:8080/",
+        "virksomhet.inntekt.v3.endpointurl" to "http://mockserver:8080/",
+        "allow.insecure.soap.requests" to true.toString(),
 
         "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api",
-        "allow.insecure.soap.requests" to true.toString(),
         "jwks.url" to "http://localhost:4352/certs",
-        "jwt.issuer" to "http://simple-oidc-provider"
+        "jwt.issuer" to "http://localhost:4353"
     )
 )
 private val devProperties = ConfigurationMap(
@@ -120,7 +121,8 @@ internal data class Configuration(
 
     data class Application(
         val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) },
-        val httpPort: Int = config()[Key("application.httpPort", intType)]
+        val httpPort: Int = config()[Key("application.httpPort", intType)],
+        val authEnabled: Boolean = config()[Key("application.auth.enabled", booleanType)]
     )
 }
 
