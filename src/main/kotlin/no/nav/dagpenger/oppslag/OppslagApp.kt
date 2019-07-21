@@ -99,6 +99,7 @@ fun main() {
         oppslag(
             jwkProvider = jwkProvider,
             jwtIssuer = config.auth.issuer,
+            authEnabled = config.application.authEnabled,
             joarkClient = joarkClient,
             personClient = personClient,
             aktorRegisterClient = aktorRegisterClient,
@@ -116,6 +117,7 @@ fun main() {
 fun Application.oppslag(
     jwkProvider: JwkProvider,
     jwtIssuer: String,
+    authEnabled: Boolean = true,
     joarkClient: JoarkClient,
     personClient: PersonClient,
     aktorRegisterClient: AktorRegisterHttpClient,
@@ -144,7 +146,7 @@ fun Application.oppslag(
 
     install(Authentication) {
         jwt {
-            skipWhen { true }
+            skipWhen { !authEnabled }
 
             realm = "Dagpenger Oppslag"
 
