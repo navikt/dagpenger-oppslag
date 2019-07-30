@@ -1,0 +1,5 @@
+*
+!healthcheck.js
+!lib/
+!package*.json
+!server.js
