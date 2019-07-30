@@ -3,3 +3,7 @@
 
 # Except shadow jar
 !build/libs/*.jar
+!src/
+!gradle*
+!*gradle.kts
+!buildSrc
