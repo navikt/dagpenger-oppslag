@@ -27,3 +27,15 @@ services:
       - type: bind
         source: ./mocked-services/lib
         target: /usr/src/app/lib
+
+  mockserver-local:
+    build: ./mocked-services
+    command: ./node_modules/.bin/nodemon -L server.js
+    environment:
+      PORT: "8080"
+    ports:
+      - "8079:8080"
+    volumes:
+      - type: bind
+        source: ./mocked-services/lib
+        target: /usr/src/app/lib
