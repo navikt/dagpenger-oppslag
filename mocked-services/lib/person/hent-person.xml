@@ -1,4 +1,4 @@
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 	xmlns:web="http://nav.no/tjeneste/virksomhet/person/v3">
 	<soapenv:Header/>
 	<soapenv:Body>
@@ -6,10 +6,10 @@
 			<response>
 				<person>
 					<personnavn>
-						<etternavn>asdf</etternavn>
-						<fornavn>asdf</fornavn>
-						<mellomnavn>asdf</mellomnavn>
-						<sammensattNavn>asdf</sammensattNavn>
+						<etternavn>TestEtternavn</etternavn>
+						<fornavn>TestFornavn</fornavn>
+						<mellomnavn>TestMellomnavn</mellomnavn>
+						<sammensattNavn>TestEtternavn, TestFornavn TestMellomnavn</sammensattNavn>
 					</personnavn>
 				</person>
 			</response>

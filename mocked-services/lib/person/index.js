@@ -10,7 +10,6 @@ const hentPersonAction = soapAction(
 );
 
 app.post("/person", hentPersonAction, (req, res) => {
-  console.log("perosn");
   res
     .type("application/xml")
     .status(hentPersonResponse.status)
@@ -22,7 +21,6 @@ const pingAction = soapAction(
 );
 
 app.post("/person", pingAction, (req, res) => {
-  console.log("ping");
   res
     .type("application/xml")
     .status(ping.status)
