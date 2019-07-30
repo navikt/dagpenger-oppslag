@@ -7,6 +7,7 @@ pipeline {
     VERSION = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     DOCKER_REPO = 'repo.adeo.no:5443/'
     DOCKER_IMAGE_VERSION = '${DOCKER_REPO}${APPLICATION_NAME}:${VERSION}'
+    DOCKER_BUILDKIT=1
   }
 
   stages {
