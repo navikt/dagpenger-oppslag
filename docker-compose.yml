@@ -1,10 +1,29 @@
-version: '3.3'
+version: '3.7'
 services:
+  dagpenger-oppslag:
+    build:
+      context: .
+      target: dev-env
+    depends_on:
+      - mockserver
+    ports:
+      - "8080:8080"
+    environment:
+      SECURITYTOKENSERVICE_URL: http://mockserver:8080/sts/authorize
+      VIRKSOMHET_PERSON_V3_ENDPOINTURL: http://mockserver:8080/person
+
   oidc-provider:
     image: qlik/simple-oidc-provider
-    ports:
-      - 4352:4352
     environment:
-      - PORT=4352
+      REDIRECTS: http://localhost:3000/inntekter/oidc/callback
+      PORT: "4352"
 
-
+  mockserver:
+    build: ./mocked-services
+    command: ./node_modules/.bin/nodemon -L server.js
+    environment:
+      PORT: "8080"
+    volumes:
+      - type: bind
+        source: ./mocked-services/lib
+        target: /usr/src/app/lib
