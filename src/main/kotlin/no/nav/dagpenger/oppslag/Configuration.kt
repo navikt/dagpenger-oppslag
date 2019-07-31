@@ -52,7 +52,17 @@ private val devProperties = ConfigurationMap(
 )
 private val prodProperties = ConfigurationMap(
     mapOf(
-        "application.profile" to Profile.PROD.toString()
+        "application.profile" to Profile.PROD.toString(),
+        "securitytokenservice.url" to "https://sts.adeo.no/SecurityTokenServiceProvider/",
+        "aktor.url" to "https://app.adeo.no/aktoerregister/api",
+        "virksomhet.person.v3.endpointurl" to "https://wasapp.adeo.no/tpsws/ws/Person/v3",
+        "virksomhet.arbeidsfordeling.v1.endpointurl" to "https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1",
+        "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl" to "https://arena.adeo.no/ail_ws/BehandleArbeidOgAktivitetOppgave_v1",
+        "journalfoerinngaaende.v1.url" to "https://dokarkiv.nais.adeo.no/rest/journalfoerinngaaende/v1",
+        "virksomhet.inntekt.v3.endpointurl" to "https://app.adeo.no/inntektskomponenten-ws/inntekt/v3/Inntekt",
+        "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api",
+        "jwks.url" to "https://security-token-service.nais.adeo.no/rest/v1/sts/jwks",
+        "jwt.issuer" to "https://security-token-service.nais.adeo.no"
     )
 )
 
