@@ -12,7 +12,6 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.mockk.mockk
-import no.nav.dagpenger.oppslag.Environment
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.oppslag
 import no.nav.dagpenger.oppslag.samlAssertionResponse
@@ -62,29 +61,37 @@ class PersonComponentTest {
         val jwtStub = JwtStub("test issuer")
         val token = jwtStub.createTokenFor("srvdp-jrnf-ruting")
 
-        WireMock.stubFor(stsStub("stsUsername", "stsPassword")
-            .willReturn(samlAssertionResponse("testusername", "theIssuer", "CN=B27 Issuing CA Intern, DC=preprod, DC=local",
-                "digestValue", "signatureValue", "certificateValue")))
+        WireMock.stubFor(
+            stsStub("stsUsername", "stsPassword")
+                .willReturn(
+                    samlAssertionResponse(
+                        "testusername", "theIssuer", "CN=B27 Issuing CA Intern, DC=preprod, DC=local",
+                        "digestValue", "signatureValue", "certificateValue"
+                    )
+                )
+        )
 
-        WireMock.stubFor(personServiceStub("08078422069")
-            .withSamlAssertion("testusername", "theIssuer", "CN=B27 Issuing CA Intern, DC=preprod, DC=local",
-                "digestValue", "signatureValue", "certificateValue")
-            .withCallId()
-            .willReturn(WireMock.ok(hentGeografiskTilknytning_response)))
+        WireMock.stubFor(
+            personServiceStub("08078422069")
+                .withSamlAssertion(
+                    "testusername", "theIssuer", "CN=B27 Issuing CA Intern, DC=preprod, DC=local",
+                    "digestValue", "signatureValue", "certificateValue"
+                )
+                .withCallId()
+                .willReturn(WireMock.ok(hentGeografiskTilknytning_response))
+        )
 
-        val env = Environment(mapOf(
-            "SECURITYTOKENSERVICE_URL" to server.baseUrl().plus("/sts"),
-            "SRVDAGPENGER_OPPSLAG_USERNAME" to "stsUsername",
-            "SRVDAGPENGER_OPPSLAG_PASSWORD" to "stsPassword",
-            "VIRKSOMHET_PERSON_V3_ENDPOINTURL" to server.baseUrl().plus("/person"),
-            "JWT_ISSUER" to "test issuer",
-            "ALLOW_INSECURE_SOAP_REQUESTS" to "true"
-        ))
+        val securityTokenServiceEndpointUrl = server.baseUrl().plus("/sts")
+        val securityTokenUsername = "stsUsername"
+        val securityTokenPassword = "stsPassword"
+        val personUrl = server.baseUrl().plus("/person")
+        val jwtIssuer = "test issuer"
+        val allowInsecureSoapRequests = true
 
         val stsClient by lazy {
             stsClient(
-                env.securityTokenServiceEndpointUrl,
-                env.securityTokenUsername to env.securityTokenPassword
+                securityTokenServiceEndpointUrl,
+                securityTokenUsername to securityTokenPassword
             )
         }
 
@@ -92,9 +99,9 @@ class PersonComponentTest {
         val aktorRegisterHttpClient = mockk<AktorRegisterHttpClient>()
         val enhetsRegisterClient = mockk<EnhetsRegisteretHttpClient>()
 
-        val personPort = SoapPort.PersonV3(env.personUrl)
+        val personPort = SoapPort.PersonV3(personUrl)
 
-        if (env.allowInsecureSoapRequests) {
+        if (allowInsecureSoapRequests) {
             stsClient.configureFor(personPort, STS_SAML_POLICY_NO_TRANSPORT_BINDING)
         } else {
             stsClient.configureFor(personPort)
@@ -102,14 +109,26 @@ class PersonComponentTest {
 
         val personClient = PersonClient(personPort)
 
-        withTestApplication({ oppslag(env, jwtStub.stubbedJwkProvider(), joarkClient, personClient, aktorRegisterHttpClient, enhetsRegisterClient) }) {
+        withTestApplication({
+            oppslag(
+                jwkProvider = jwtStub.stubbedJwkProvider(),
+                jwtIssuer = jwtIssuer,
+                joarkClient = joarkClient,
+                personClient = personClient,
+                aktorRegisterClient = aktorRegisterHttpClient,
+                enhetRegisterClient = enhetsRegisterClient
+            )
+        }) {
             handleRequest(HttpMethod.Post, "api/person/geografisk-tilknytning") {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
                 addHeader(HttpHeaders.Authorization, "Bearer $token")
                 setBody("{\"fødselsnummer\": \"08078422069\"}")
             }.apply {
                 Assertions.assertEquals(200, response.status()?.value)
-                Assertions.assertEquals("{\"geografiskTilknytning\":\"en geografisk tilknytning\",\"diskresjonskode\":\"1\"}", response.content)
+                Assertions.assertEquals(
+                    "{\"geografiskTilknytning\":\"en geografisk tilknytning\",\"diskresjonskode\":\"1\"}",
+                    response.content
+                )
             }
         }
     }
@@ -119,8 +138,10 @@ private fun personServiceStub(ident: String): MappingBuilder {
     return WireMock.post(WireMock.urlPathEqualTo("/person"))
         .withSoapAction("http://nav.no/tjeneste/virksomhet/person/v3/Person_v3/hentGeografiskTilknytningRequest")
         .withRequestBody(
-            MatchesXPathPattern("//soap:Envelope/soap:Body/ns2:hentGeografiskTilknytning/request/aktoer/ident/ident/text()",
-            personNamespace, WireMock.equalTo(ident))
+            MatchesXPathPattern(
+                "//soap:Envelope/soap:Body/ns2:hentGeografiskTilknytning/request/aktoer/ident/ident/text()",
+                personNamespace, WireMock.equalTo(ident)
+            )
         )
 }
 

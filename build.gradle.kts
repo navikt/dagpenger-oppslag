@@ -52,6 +52,7 @@ dependencies {
     implementation(Ktor.authJwt)
     implementation(Ktor.locations)
     implementation(Ktor.micrometerMetrics)
+    implementation(Konfig.konfig)
 
     implementation(Micrometer.prometheusRegistry)
 
@@ -155,4 +156,12 @@ tasks.withType<Test> {
         exceptionFormat = TestExceptionFormat.FULL
         events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
     }
+}
+
+tasks.named("shadowJar") {
+    dependsOn("test")
+}
+
+tasks.named("compileKotlin") {
+    dependsOn("spotlessKotlinCheck")
 }
