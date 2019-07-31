@@ -71,7 +71,7 @@ pipeline {
     stage('Acceptance testing') {
       stages {
         stage('Deploy to pre-production') {
-          when { branch 'feature/naiserator' }
+          when { branch 'master' }
           steps {
 
             sh label: 'Deploy with kubectl', script: """
