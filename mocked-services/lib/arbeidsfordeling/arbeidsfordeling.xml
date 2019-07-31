@@ -1,0 +1,15 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
+    xmlns:v1="http://nav.no/tjeneste/virksomhet/arbeidsfordeling/v1/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <v1:finnBehandlendeEnhetListeResponse>
+            <response>
+                <!--Zero or more repetitions:-->
+                <behandlendeEnhetListe>
+                    <enhetId>5</enhetId>
+                    <enhetNavn>Test</enhetNavn>
+                </behandlendeEnhetListe>
+            </response>
+        </v1:finnBehandlendeEnhetListeResponse>
+    </soapenv:Body>
+</soapenv:Envelope>

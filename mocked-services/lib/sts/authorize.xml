@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:wsa="http://www.w3.org/2005/08/addressing" 
+    xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <soapenv:Header>
+        <wsa:MessageID>urn:uuid:01a3af56-5731-45ce-bd71-b31d8bdf750c</wsa:MessageID>
+        <wsa:Action>http://docs.oasis-open.org/ws-sx/ws-trust/200512/RSTRC/IssueFinal</wsa:Action>
+        <wsa:To>http://www.w3.org/2005/08/addressing/anonymous</wsa:To>
+    </soapenv:Header>
+    <soapenv:Body>
+        <wst:RequestSecurityTokenResponseCollection xmlns:wst="http://docs.oasis-open.org/ws-sx/ws-trust/200512" 
+            xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+            <wst:RequestSecurityTokenResponse Context="supportLater">
+                <wst:TokenType>http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0</wst:TokenType>
+                <wst:RequestedSecurityToken>
+                    <saml2:Assertion Version="2.0" ID="SAML-e22b97fd-2f40-4261-b751-b6550c0dd6c2" IssueInstant="2018-10-18T10:34:41Z" 
+                        xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
+                        <saml2:Issuer>IS02</saml2:Issuer>
+                        <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+                            <SignedInfo>
+                                <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                                <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+                                <Reference URI="#SAML-e22b97fd-2f40-4261-b751-b6550c0dd6c2">
+                                    <Transforms>
+                                        <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+                                        <Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+                                    </Transforms>
+                                    <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+                                    <DigestValue>asdf</DigestValue>
+                                </Reference>
+                            </SignedInfo>
+                            <SignatureValue>qwertyuio</SignatureValue>
+                            <KeyInfo>
+                                <X509Data>
+                                    <X509Certificate>asdfghjkl</X509Certificate>
+                                    <X509IssuerSerial>
+                                        <X509IssuerName>CN=D26 Issuing CA Intern, DC=test, DC=local</X509IssuerName>
+                                        <X509SerialNumber>123</X509SerialNumber>
+                                    </X509IssuerSerial>
+                                </X509Data>
+                            </KeyInfo>
+                        </Signature>
+                        <saml2:Subject>
+                            <saml2:NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">username</saml2:NameID>
+                            <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+                                <saml2:SubjectConfirmationData NotBefore="2018-10-18T10:34:38Z" NotOnOrAfter="2018-10-18T11:34:44Z"/>
+                            </saml2:SubjectConfirmation>
+                        </saml2:Subject>
+                        <saml2:Conditions NotBefore="2018-10-18T10:34:38Z" NotOnOrAfter="2018-10-18T11:34:44Z"/>
+                        <saml2:AttributeStatement>
+                            <saml2:Attribute Name="identType" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                                <saml2:AttributeValue>Systemressurs</saml2:AttributeValue>
+                            </saml2:Attribute>
+                            <saml2:Attribute Name="authenticationLevel" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                                <saml2:AttributeValue>0</saml2:AttributeValue>
+                            </saml2:Attribute>
+                            <saml2:Attribute Name="consumerId" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                                <saml2:AttributeValue>username</saml2:AttributeValue>
+                            </saml2:Attribute>
+                        </saml2:AttributeStatement>
+                    </saml2:Assertion>
+                </wst:RequestedSecurityToken>
+                <wst:Lifetime>
+                    <wsu:Created>2018-10-18T10:34:38Z</wsu:Created>
+                    <wsu:Expires>2018-10-18T11:34:44Z</wsu:Expires>
+                </wst:Lifetime>
+            </wst:RequestSecurityTokenResponse>
+        </wst:RequestSecurityTokenResponseCollection>
+    </soapenv:Body>
+</soapenv:Envelope>

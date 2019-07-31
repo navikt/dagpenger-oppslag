@@ -1,0 +1,18 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:web="http://nav.no/tjeneste/virksomhet/person/v3">
+	<soapenv:Header/>
+	<soapenv:Body>
+		<web:hentPersonResponse>
+			<response>
+				<person>
+					<personnavn>
+						<etternavn>TestEtternavn</etternavn>
+						<fornavn>TestFornavn</fornavn>
+						<mellomnavn>TestMellomnavn</mellomnavn>
+						<sammensattNavn>TestEtternavn, TestFornavn TestMellomnavn</sammensattNavn>
+					</personnavn>
+				</person>
+			</response>
+		</web:hentPersonResponse>
+	</soapenv:Body>
+</soapenv:Envelope>
