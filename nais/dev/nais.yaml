@@ -1,0 +1,8 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: dagpenger-oppslag
+spec:
+  ingresses:
+    - "https://dagpenger-oppslag.nais.preprod.local"
+
