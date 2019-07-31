@@ -5,6 +5,7 @@ pipeline {
     APPLICATION_NAME = "${DEPLOYMENT.commonLabels.app}"
     ZONE = "${DEPLOYMENT.commonAnnotations.zone}"
     VERSION = sh(label: 'Get git sha1 as version', script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+    DOCKER_BUILDKIT = 1
   }
 
   stages {
