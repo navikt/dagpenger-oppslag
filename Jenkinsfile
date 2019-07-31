@@ -76,12 +76,17 @@ pipeline {
       }
     }
 
-      stage('Deploy to production') {
-          steps {
-              script {
-                  response = naisDeploy.createNaisAutodeployment(env.APPLICATION_NAME, env.VERSION, "p", env.ZONE, env.NAMESPACE, "")
-              }
-          }
+    stage('Deploy to production') {
+      input {
+        message 'Deploy to production?'
+        ok 'Yes'
       }
+
+      steps {
+        script {
+          response = naisDeploy.createNaisAutodeployment(env.APPLICATION_NAME, env.VERSION, "p", env.ZONE, env.NAMESPACE, "")
+        }
+      }
+    }
   }
 }
