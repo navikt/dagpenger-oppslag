@@ -4,7 +4,7 @@ metadata:
   name: dagpenger-oppslag
 spec:
   image: repo.adeo.no:5443/dagpenger-oppslag:latest
-  port: 8092
+  port: 8080
   liveness:
     path: /isAlive
   readiness:
