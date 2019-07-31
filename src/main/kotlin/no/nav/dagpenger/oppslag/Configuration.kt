@@ -127,8 +127,7 @@ internal data class Configuration(
 
     data class Application(
         val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) },
-        val httpPort: Int = config()[Key("application.httpPort", intType)],
-        val authEnabled: Boolean = config()[Key("application.auth.enabled", booleanType)]
+        val httpPort: Int = config()[Key("application.httpPort", intType)]
     )
 }
 
