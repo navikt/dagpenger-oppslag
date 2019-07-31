@@ -23,16 +23,13 @@ private val localProperties = ConfigurationMap(
         "srvdagpenger.oppslag.username" to "localhost",
         "srvdagpenger.oppslag.password" to "5432",
         "securitytokenservice.url" to "http://localhost:8079/sts/authorize",
-
         "aktor.url" to "",
         "virksomhet.person.v3.endpointurl" to "http://localhost:8079/person",
         "virksomhet.arbeidsfordeling.v1.endpointurl" to "http://localhost:8079/arbeidsfordeling",
         "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl" to "http://",
-        "dagpenger.arena.hentsaker.url" to "http://:8080",
         "journalfoerinngaaende.v1.url" to "http://mockserver:8080/",
         "virksomhet.inntekt.v3.endpointurl" to "http://mockserver:8080/",
         "allow.insecure.soap.requests" to true.toString(),
-
         "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api",
         "jwks.url" to "http://localhost:4352/certs",
         "jwt.issuer" to "http://localhost:4353"
@@ -40,13 +37,32 @@ private val localProperties = ConfigurationMap(
 )
 private val devProperties = ConfigurationMap(
     mapOf(
-        "application.profile" to Profile.DEV.toString()
-
+        "application.profile" to Profile.DEV.toString(),
+        "securitytokenservice.url" to "https://sts-t4.test.local/SecurityTokenServiceProvider/",
+        "aktor.url" to "https://app-t4.adeo.no/aktoerregister/api",
+        "virksomhet.person.v3.endpointurl" to "https://wasapp-t4.adeo.no/tpsws/ws/Person/v3",
+        "virksomhet.arbeidsfordeling.v1.endpointurl" to "https://app-t4.adeo.no/norg2/ws/Arbeidsfordeling/v1",
+        "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl" to "https://arena-t4.adeo.no/ail_ws/BehandleArbeidOgAktivitetOppgave_v1",
+        "journalfoerinngaaende.v1.url" to "https://dokarkiv-t4.nais.preprod.local/rest/journalfoerinngaaende/v1",
+        "virksomhet.inntekt.v3.endpointurl" to "https://app-t4.adeo.no/inntektskomponenten-ws/inntekt/v3/Inntekt",
+        "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api",
+        "jwks.url" to "https://security-token-service-t4.nais.preprod.local/rest/v1/sts/jwks",
+        "jwt.issuer" to "https://security-token-service-t4.nais.preprod.local"
     )
 )
 private val prodProperties = ConfigurationMap(
     mapOf(
-        "application.profile" to Profile.PROD.toString()
+        "application.profile" to Profile.PROD.toString(),
+        "securitytokenservice.url" to "https://sts.adeo.no/SecurityTokenServiceProvider/",
+        "aktor.url" to "https://app.adeo.no/aktoerregister/api",
+        "virksomhet.person.v3.endpointurl" to "https://wasapp.adeo.no/tpsws/ws/Person/v3",
+        "virksomhet.arbeidsfordeling.v1.endpointurl" to "https://app.adeo.no/norg2/ws/Arbeidsfordeling/v1",
+        "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl" to "https://arena.adeo.no/ail_ws/BehandleArbeidOgAktivitetOppgave_v1",
+        "journalfoerinngaaende.v1.url" to "https://dokarkiv.nais.adeo.no/rest/journalfoerinngaaende/v1",
+        "virksomhet.inntekt.v3.endpointurl" to "https://app.adeo.no/inntektskomponenten-ws/inntekt/v3/Inntekt",
+        "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api",
+        "jwks.url" to "https://security-token-service.nais.adeo.no/rest/v1/sts/jwks",
+        "jwt.issuer" to "https://security-token-service.nais.adeo.no"
     )
 )
 
@@ -121,8 +137,7 @@ internal data class Configuration(
 
     data class Application(
         val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) },
-        val httpPort: Int = config()[Key("application.httpPort", intType)],
-        val authEnabled: Boolean = config()[Key("application.auth.enabled", booleanType)]
+        val httpPort: Int = config()[Key("application.httpPort", intType)]
     )
 }
 
