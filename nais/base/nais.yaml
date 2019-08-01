@@ -13,14 +13,15 @@ spec:
     enabled: true
     path: /metrics
   replicas:
-    min: 3
+    min: 2
     max: 4
   resources:
     limits:
-      cpu: 500m
-      memory: 1024Mi
+      cpu: 1000m
+      memory: 384Mi
     requests:
-      cpu: 200m
-      memory: 512Mi
+      cpu: 100m
+      memory: 256Mi
   vault:
     enabled: true
+  webproxy: true
