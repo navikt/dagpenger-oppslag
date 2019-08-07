@@ -21,6 +21,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.metrics.micrometer.MicrometerMetrics
+import io.ktor.request.path
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.response.respondTextWriter
@@ -48,6 +49,7 @@ import no.nav.dagpenger.oppslag.ws.person.person
 import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
 import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.dagpenger.oppslag.ws.sts.stsClient
+import org.slf4j.event.Level
 import java.net.URI
 import java.net.URL
 import java.util.concurrent.TimeUnit
@@ -123,7 +125,15 @@ fun Application.oppslag(
 ) {
 
     install(DefaultHeaders)
-    install(CallLogging)
+    install(CallLogging) {
+        level = Level.INFO
+
+        filter { call ->
+            !call.request.path().startsWith("/isAlive") &&
+                !call.request.path().startsWith("/isReady") &&
+                !call.request.path().startsWith("/metrics")
+        }
+    }
     install(MicrometerMetrics) {
         registry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT, CollectorRegistry.defaultRegistry, Clock.SYSTEM)
     }
