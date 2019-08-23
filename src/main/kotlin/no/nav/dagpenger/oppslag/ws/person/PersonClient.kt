@@ -25,8 +25,8 @@ class PersonClient(private val person: PersonV3) {
             val response = person.hentGeografiskTilknytning(request)
             Success(
                 GeografiskTilknytningResponse(
-                    response.geografiskTilknytning.geografiskTilknytning,
-                    response.diskresjonskode?.value
+                    geografiskTilknytning = response.geografiskTilknytning.geografiskTilknytning,
+                    diskresjonskode = response.diskresjonskode?.value
                 )
             )
         } catch (ex: Exception) {
@@ -47,10 +47,10 @@ class PersonClient(private val person: PersonV3) {
             val navn = response.person.personnavn
             Success(
                 PersonNameResponse(
-                    navn.etternavn,
-                    navn.fornavn,
-                    navn.mellomnavn,
-                    navn.sammensattNavn
+                    etternavn = navn.etternavn,
+                    fornavn = navn.fornavn,
+                    mellomnavn = navn.mellomnavn,
+                    sammensattNavn = navn.sammensattNavn
                 )
             )
         } catch (ex: Exception) {
