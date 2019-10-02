@@ -97,6 +97,53 @@ class AktorRegisterApiTest {
     }
 
     @Test
+    fun `Returns 404 if aktør ident is not found`() {
+        val testFnr = "12345678912"
+        WireMock.stubFor(
+                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
+                        .withHeader("Nav-Personidenter", WireMock.equalTo(testFnr))
+                        .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNoAktørIdent))
+        )
+
+        val aktorRegisterHttpClient = AktorRegisterHttpClient(server.url(""), DummyOidcClient())
+        testApp(aktorRegisterHttpClient) {
+            handleRequest(HttpMethod.Get, "api/aktoer-ident") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.Authorization, "Bearer $token")
+                addHeader("ident", testFnr)
+            }.apply {
+                assertTrue(requestHandled)
+                assertEquals(HttpStatusCode.NotFound, response.status())
+                assertEquals(null, response.headers["Cache-Control"])
+            }
+        }
+    }
+
+    @Test
+    fun `returns aktørid if found`() {
+        val testFnr = "12345678912"
+
+        WireMock.stubFor(
+                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
+                        .withHeader("Nav-Personidenter", WireMock.equalTo(testFnr))
+                        .willReturn(WireMock.aResponse().withBody(validFødselsNummerJsonBody))
+        )
+
+        val aktorRegisterHttpClient = AktorRegisterHttpClient(server.url(""), DummyOidcClient())
+        testApp(aktorRegisterHttpClient) {
+            handleRequest(HttpMethod.Get, "api/aktoer-ident") {
+                addHeader(HttpHeaders.ContentType, "application/json")
+                addHeader(HttpHeaders.Authorization, "Bearer $token")
+                addHeader("ident", testFnr)
+            }.apply {
+                assertTrue(requestHandled)
+                assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals("max-age=86400", response.headers["Cache-Control"])
+            }
+        }
+    }
+
+    @Test
     fun `Returns norsk ident if found`() {
         val testAktorId = "1234567891234"
         WireMock.stubFor(
@@ -153,6 +200,41 @@ class AktorRegisterApiTest {
             }
         }
     """.trimIndent()
+
+    val validFødselsNummerJsonBody = """
+        {
+            "12345678912": {
+                "identer": [
+                    {
+                        "ident": "12345678912",
+                        "identgruppe": "NorskIdent",
+                        "gjeldende": true
+                    },
+                    {
+                        "ident": "1234567891234",
+                        "identgruppe": "AktoerId",
+                        "gjeldende": true
+                    }
+                ],
+                "feilmelding": null
+            }
+        }
+        """.trimIndent()
+
+    val validJsonBodyWithNoAktørIdent = """
+        {
+            "12345678912": {
+                "identer": [
+                    {
+                        "ident": "12345678912",
+                        "identgruppe": "NorskIdent",
+                        "gjeldende": true
+                    }
+                ],
+                "feilmelding": null
+            }
+        }
+        """.trimIndent()
 
     private fun testApp(aktorRegisterHttpClient: AktorRegisterHttpClient, callback: TestApplicationEngine.() -> Unit) {
         val jwtIssuer = "test issuer"

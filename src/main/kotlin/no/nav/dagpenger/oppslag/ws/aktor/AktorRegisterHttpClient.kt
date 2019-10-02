@@ -34,6 +34,7 @@ class AktorRegisterHttpClient(
         ) {
             responseObject(moshiDeserializerOf(jsonResponseAdapter))
         }
+
         return result.fold(
             { success -> success[ident]?.identer ?: emptyList() },
             { error ->
@@ -46,13 +47,18 @@ class AktorRegisterHttpClient(
     }
 
     private fun gjeldendeIdent(ident: String, gruppe: IdentGruppe): String? {
-        return gjeldendeIdenter(ident).firstOrNull {
+        val identer = gjeldendeIdenter(ident)
+        return identer.firstOrNull {
             it.identgruppe == gruppe
         }?.ident
     }
 
     fun gjeldendeNorskIdent(ident: String): String? {
         return gjeldendeIdent(ident, IdentGruppe.NorskIdent)
+    }
+
+    fun gjeldendeAktørId(ident: String): String? {
+        return gjeldendeIdent(ident, IdentGruppe.AktoerId)
     }
 }
 

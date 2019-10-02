@@ -58,6 +58,28 @@ class AktorRegisterClientTest {
 
         Assertions.assertNull(responseFnr)
     }
+
+    @Test
+    fun `no akørid in response from identer call`() {
+        val testFnr = "12345678912"
+
+        WireMock.stubFor(
+                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
+                        .withHeader("Nav-Personidenter", WireMock.equalTo(testFnr))
+                        .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNoAktørIdent))
+        )
+
+        val aktørregisterHttpClient =
+                AktorRegisterHttpClient(
+                        server.url(""),
+                        DummyOidcClient()
+                )
+
+        val responseAktørId = aktørregisterHttpClient.gjeldendeAktørId(testFnr)
+
+        Assertions.assertNull(responseAktørId)
+    }
+
     @Test
     fun `fetch fnr on 200 ok`() {
         val testAktørId = "1234567891234"
@@ -80,6 +102,27 @@ class AktorRegisterClientTest {
         Assertions.assertEquals(testFnr, responseFnr)
     }
 
+    @Test
+    fun `fetch aktørid on 200 ok`() {
+        val testAktørId = "1234567891234"
+        val testFnr = "12345678912"
+
+        WireMock.stubFor(
+            WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
+                .withHeader("Nav-Personidenter", WireMock.equalTo(testFnr))
+                .willReturn(WireMock.aResponse().withBody(validFødselsNummerJsonBody))
+        )
+
+        val aktørregisterHttpClient =
+            AktorRegisterHttpClient(server.url(""),
+                DummyOidcClient()
+            )
+
+        val responseAktørId = aktørregisterHttpClient.gjeldendeAktørId(testFnr)
+
+        Assertions.assertEquals(testAktørId, responseAktørId)
+    }
+
     val validJsonBody = """
         {
             "1234567891234": {
@@ -99,6 +142,42 @@ class AktorRegisterClientTest {
             }
         }
         """.trimIndent()
+
+    val validFødselsNummerJsonBody = """
+        {
+            "12345678912": {
+                "identer": [
+                    {
+                        "ident": "12345678912",
+                        "identgruppe": "NorskIdent",
+                        "gjeldende": true
+                    },
+                    {
+                        "ident": "1234567891234",
+                        "identgruppe": "AktoerId",
+                        "gjeldende": true
+                    }
+                ],
+                "feilmelding": null
+            }
+        }
+        """.trimIndent()
+
+    val validJsonBodyWithNoAktørIdent = """
+        {
+            "12345678912": {
+                "identer": [
+                    {
+                        "ident": "12345678912",
+                        "identgruppe": "NorskIdent",
+                        "gjeldende": true
+                    }
+                ],
+                "feilmelding": null
+            }
+        }
+        """.trimIndent()
+
     val validJsonBodyWithNoNorwegianIdent = """
         {
             "1234567891234": {

@@ -22,7 +22,18 @@ fun Route.aktorRegister(aktorRegisterClient: AktorRegisterHttpClient) {
             } ?: call.respond(HttpStatusCode.NotAcceptable, MissingHeader("ident"))
         }
     }
+    route("api/aktoer-ident") {
+        get {
+            call.request.headers["ident"]?.let { ident ->
+                aktorRegisterClient.gjeldendeAktørId(ident)?.let { aktoerId ->
+                    call.response.cacheControl(CacheControl.MaxAge(CACHE_SECONDS))
+                    call.respond(HttpStatusCode.OK, AktoerIdentResponse(aktoerId))
+                } ?: call.respond(HttpStatusCode.NotFound, "Fant ingen aktørid for $ident")
+            } ?: call.respond(HttpStatusCode.NotAcceptable, MissingHeader("ident"))
+        }
+    }
 }
 
 data class MissingHeader(val headerName: String)
 data class NaturligIdentResponse(val naturligIdent: String)
+data class AktoerIdentResponse(val aktoerId: String)
