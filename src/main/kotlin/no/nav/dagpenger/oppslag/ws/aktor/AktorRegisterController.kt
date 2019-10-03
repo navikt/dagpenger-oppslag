@@ -25,9 +25,9 @@ fun Route.aktorRegister(aktorRegisterClient: AktorRegisterHttpClient) {
     route("api/aktoer-ident") {
         get {
             call.request.headers["ident"]?.let { ident ->
-                aktorRegisterClient.gjeldendeAktørId(ident)?.let { aktoerId ->
+                aktorRegisterClient.gjeldendeAktørId(ident)?.let { aktørId ->
                     call.response.cacheControl(CacheControl.MaxAge(CACHE_SECONDS))
-                    call.respond(HttpStatusCode.OK, AktoerIdentResponse(aktoerId))
+                    call.respond(HttpStatusCode.OK, AktoerIdentResponse(aktørId))
                 } ?: call.respond(HttpStatusCode.NotFound, "Fant ingen aktørid for $ident")
             } ?: call.respond(HttpStatusCode.NotAcceptable, MissingHeader("ident"))
         }
@@ -36,4 +36,4 @@ fun Route.aktorRegister(aktorRegisterClient: AktorRegisterHttpClient) {
 
 data class MissingHeader(val headerName: String)
 data class NaturligIdentResponse(val naturligIdent: String)
-data class AktoerIdentResponse(val aktoerId: String)
+data class AktoerIdentResponse(val aktørId: String)
