@@ -21,8 +21,8 @@ apply {
 }
 
 repositories {
-    jcenter()
     mavenCentral()
+    jcenter()
     maven("https://jitpack.io")
 }
 
