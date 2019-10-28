@@ -54,7 +54,7 @@ import java.net.URI
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
-private val authorizedUsers = listOf("srvdp-jrnf-ruting", "srvdp-jrnf-ferdig", "srvdp-inntekt-api", "srvdp-innsyn-kalk")
+private val authorizedUsers = listOf("srvdp-jrnf-ruting", "srvdp-jrnf-ferdig", "srvdp-inntekt-api", "srvdp-kalkulator-api")
 private val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 
 private val LOGGER = KotlinLogging.logger {}
