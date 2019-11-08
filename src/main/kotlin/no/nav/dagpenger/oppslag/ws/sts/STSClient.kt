@@ -1,5 +1,6 @@
 package no.nav.dagpenger.oppslag.ws.sts
 
+import no.nav.dagpenger.oppslag.ws.CallIdInterceptor
 import org.apache.cxf.Bus
 import org.apache.cxf.BusFactory
 import org.apache.cxf.binding.soap.Soap12
@@ -25,7 +26,7 @@ fun stsClient(stsUrl: String, credentials: Pair<String, String>): STSClient {
         isAllowRenewing = false
 
         location = stsUrl
-        features = listOf(LoggingFeature())
+        outInterceptors = listOf(CallIdInterceptor())
 
         properties = mapOf(
             SecurityConstants.USERNAME to credentials.first,
