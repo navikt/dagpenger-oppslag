@@ -1,0 +1,27 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: dagpenger-oppslag
+spec:
+  ingresses:
+    - "https://dagpenger-oppslag-q2.nais.preprod.local"
+  env:
+    - name: SECURITYTOKENSERVICE_URL
+      value: "https://sts-q2.preprod.local/SecurityTokenServiceProvider/"
+    - name: AKTOR_URL
+      value: "https://app-q2.adeo.no/aktoerregister/api"
+    - name: VIRKSOMHET_PERSON_V3_ENDPOINTURL
+      value: "https://wasapp-q2.adeo.no/tpsws/ws/Person/v3"
+    - name: VIRKSOMHET_ARBEIDSFORDELING_V1_ENDPOINTURL
+      value: "https://app-q2.adeo.no/norg2/ws/Arbeidsfordeling/v1"
+    - name: VIRKSOMHET_BEHANDLEARBEIDOGAKTIVITETOPPGAVE_V1_ENDPOINTURL
+      value: "https://arena-q2.adeo.no/ail_ws/BehandleArbeidOgAktivitetOppgave_v1"
+    - name: JOURNALFOERINNGAAENDE_V1_URL
+      value: "https://dokarkiv-q2.nais.preprod.local/rest/journalfoerinngaaende/v1"
+    - name: VIRKSOMHET_INNTEKT_V3_ENDPOINTURL
+      value: "https://app-q2.adeo.no/inntektskomponenten-ws/inntekt/v3/Inntekt"
+    - name: JWKS_URL
+      value: "https://security-token-service.nais.preprod.local/rest/v1/sts/jwks"
+    - name: JWKS_ISSUER
+      value: "https://security-token-service.nais.preprod.local"
+
