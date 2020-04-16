@@ -1,7 +1,7 @@
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     application
@@ -100,7 +100,7 @@ spotless {
         ktlint(Klint.version)
     }
     kotlinGradle {
-        target("*.gradle.kts", "additionalScripts/*.gradle.kts")
+        target("*.gradle.kts", "buildSrc/**/*.kt*")
         ktlint(Klint.version)
     }
 }
@@ -112,9 +112,10 @@ java {
 
 val wsdlDir = "$projectDir/src/main/resources/wsdl"
 val wsdlsToGenerate = listOf(
-        "$wsdlDir/arena/Binding.wsdl",
-        "$wsdlDir/arbeidsfordeling/Binding.wsdl",
-        "$wsdlDir/hentsak/arenaSakVedtakService.wsdl")
+    "$wsdlDir/arena/Binding.wsdl",
+    "$wsdlDir/arbeidsfordeling/Binding.wsdl",
+    "$wsdlDir/hentsak/arenaSakVedtakService.wsdl"
+)
 
 val generatedDir = "$projectDir/build/generated-sources"
 
@@ -139,7 +140,11 @@ tasks {
             mkdir(generatedDir)
             wsdlsToGenerate.forEach {
                 ant.withGroovyBuilder {
-                    "taskdef"("name" to "wsimport", "classname" to "com.sun.tools.ws.ant.WsImport", "classpath" to sourceSets.getAt("main").runtimeClasspath.asPath)
+                    "taskdef"(
+                        "name" to "wsimport",
+                        "classname" to "com.sun.tools.ws.ant.WsImport",
+                        "classpath" to sourceSets.getAt("main").runtimeClasspath.asPath
+                    )
                     "wsimport"("wsdl" to it, "sourcedestdir" to generatedDir, "xnocompile" to true) {}
                 }
             }
