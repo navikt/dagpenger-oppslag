@@ -89,7 +89,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(Ktor.ktorTest)
     testImplementation(Junit5.api)
-    testImplementation(Junit5.kotlinRunner)
+    testImplementation(KoTest.runner)
     testRuntimeOnly(Junit5.engine)
     testImplementation(Wiremock.standalone)
     testImplementation(Mockk.mockk)
