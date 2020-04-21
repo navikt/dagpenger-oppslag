@@ -10,6 +10,7 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.mockk.mockk
+import java.util.UUID
 import no.nav.dagpenger.oidc.OidcClient
 import no.nav.dagpenger.oidc.OidcToken
 import no.nav.dagpenger.oidc.StsOidcClient
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
 
 class AktorRegisterApiTest {
     private val joarkClientSoapMock = mockk<JoarkClient>()

@@ -35,6 +35,9 @@ import io.micrometer.prometheus.PrometheusMeterRegistry
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import java.net.URI
+import java.net.URL
+import java.util.concurrent.TimeUnit
 import mu.KotlinLogging
 import no.nav.dagpenger.oidc.StsOidcClient
 import no.nav.dagpenger.oppslag.ws.SoapPort
@@ -50,9 +53,6 @@ import no.nav.dagpenger.oppslag.ws.sts.STS_SAML_POLICY_NO_TRANSPORT_BINDING
 import no.nav.dagpenger.oppslag.ws.sts.configureFor
 import no.nav.dagpenger.oppslag.ws.sts.stsClient
 import org.slf4j.event.Level
-import java.net.URI
-import java.net.URL
-import java.util.concurrent.TimeUnit
 
 private val authorizedUsers = listOf("srvdp-jrnf-ruting", "srvdp-jrnf-ferdig", "srvdp-inntekt-api")
 private val collectorRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry

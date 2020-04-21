@@ -7,8 +7,8 @@ import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
-import no.nav.arena.services.sakvedtakservice.FaultFeilIInputMsg
 import java.util.Date
+import no.nav.arena.services.sakvedtakservice.FaultFeilIInputMsg
 
 fun Route.arena(arenaClient: ArenaClientSoap) {
     post("api/arena/createoppgave") {

@@ -9,6 +9,7 @@ import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.test.assertTrue
 import no.nav.dagpenger.oppslag.JwtStub
 import no.nav.dagpenger.oppslag.Success
 import no.nav.dagpenger.oppslag.oppslag
@@ -19,7 +20,6 @@ import no.nav.dagpenger.oppslag.ws.person.PersonClient
 import no.nav.dagpenger.oppslag.ws.person.PersonNameResponse
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import kotlin.test.assertTrue
 
 class PersonApiTest {
     private val validJson = """
