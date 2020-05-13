@@ -37,6 +37,11 @@ val tjenestespesifikasjonerVersion = "1.2019.01.16-21.19-afc54bed6f85"
 fun tjenestespesifikasjon(name: String) = "no.nav.tjenestespesifikasjoner:$name:$tjenestespesifikasjonerVersion"
 
 dependencies {
+    constraints {
+        implementation("com.fasterxml.jackson.core:jackson-databind:${Jackson.version}") {
+            because("previous versions have a bug impacting this application")
+        }
+    }
     implementation(kotlin("stdlib"))
 
     implementation(Fuel.fuel)
