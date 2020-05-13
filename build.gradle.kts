@@ -39,9 +39,25 @@ fun tjenestespesifikasjon(name: String) = "no.nav.tjenestespesifikasjoner:$name:
 dependencies {
     constraints {
         implementation("com.fasterxml.jackson.core:jackson-databind:${Jackson.version}") {
-            because("previous versions have a bug impacting this application")
+            because("previous versions have a vulnerability")
+        }
+        implementation("commons-collections:commons-collections:3.2.2") {
+            because("previous versions have a vulnerability")
+        }
+        implementation("io.netty:netty-codec:4.1.46.Final") {
+            because("previous versions have a vulnerability")
+        }
+        implementation("io.netty:netty-codec-http:4.1.46.Final") {
+            because("previous versions have a vulnerability")
+        }
+        implementation("org.bouncycastle:bcprov-jdk15on:1.56") {
+            because("previous versions have a vulnerability")
+        }
+        implementation("org.cryptacular:cryptacular:1.2.4") {
+            because("previous versions have a vulnerability")
         }
     }
+
     implementation(kotlin("stdlib"))
 
     implementation(Fuel.fuel)
