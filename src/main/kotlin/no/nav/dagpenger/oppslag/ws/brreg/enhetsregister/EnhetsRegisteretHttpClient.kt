@@ -1,7 +1,7 @@
 package no.nav.dagpenger.oppslag.ws.brreg.enhetsregister
 
 import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.moshi.responseObject
+import no.nav.dagpenger.oppslag.responseObject
 
 class EnhetsRegisteretHttpClient(private val enhetsRegisteretUrl: String) {
 
@@ -18,7 +18,8 @@ class EnhetsRegisteretHttpClient(private val enhetsRegisteretUrl: String) {
             { error ->
                 throw EnhetsRegisteretHttpClientException(
                     error.response.statusCode,
-                    "Failed to fetch organisation name. Response message: ${error.response.responseMessage}"
+                    "Failed to fetch organisation name. Response message: ${error.response.responseMessage}",
+                    error
                 )
             }
         )
@@ -27,4 +28,4 @@ class EnhetsRegisteretHttpClient(private val enhetsRegisteretUrl: String) {
 
 data class EnhetResponse(val navn: String)
 
-class EnhetsRegisteretHttpClientException(val status: Int, override val message: String) : RuntimeException(message)
+class EnhetsRegisteretHttpClientException(val status: Int, override val message: String, t: Throwable) : RuntimeException(message, t)
