@@ -17,38 +17,90 @@ fun MappingBuilder.withCallId(): MappingBuilder {
 }
 
 fun MappingBuilder.withUsernamePasswordToken(username: String, password: String): MappingBuilder {
-    return withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Header/wsse:Security/wsse:UsernameToken/wsse:Username/text()",
-        wsseNamespace, WireMock.equalTo(username)))
-        .withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Header/wsse:Security/wsse:UsernameToken/wsse:Password/text()",
-            wsseNamespace, WireMock.equalTo(password)))
+    return withRequestBody(
+        MatchesXPathPattern(
+            "//soap:Envelope/soap:Header/wsse:Security/wsse:UsernameToken/wsse:Username/text()",
+            wsseNamespace, WireMock.equalTo(username)
+        )
+    )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//soap:Envelope/soap:Header/wsse:Security/wsse:UsernameToken/wsse:Password/text()",
+                wsseNamespace, WireMock.equalTo(password)
+            )
+        )
 }
 
 fun MappingBuilder.withRequestSecurityTokenAssertion(): MappingBuilder {
-    return withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Body/wst:RequestSecurityToken/wst:SecondaryParameters/wst:SecondaryParameters/wst:TokenType/text()",
-        requestSecurityTokenNamespace, WireMock.equalTo("http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0")))
-        .withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Body/wst:RequestSecurityToken/wst:RequestType/text()",
-            requestSecurityTokenNamespace, WireMock.equalTo("http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue")))
-        .withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Body/wst:RequestSecurityToken/wst:SecondaryParameters/wst:TokenType/text()",
-            requestSecurityTokenNamespace, WireMock.containing("http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0")))
-        .withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Body/wst:RequestSecurityToken/wst:SecondaryParameters/wst:KeyType/text()",
-            requestSecurityTokenNamespace, WireMock.equalTo("http://docs.oasis-open.org/ws-sx/ws-trust/200512/Bearer")))
+    return withRequestBody(
+        MatchesXPathPattern(
+            "//soap:Envelope/soap:Body/wst:RequestSecurityToken/wst:SecondaryParameters/wst:SecondaryParameters/wst:TokenType/text()",
+            requestSecurityTokenNamespace, WireMock.equalTo("http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0")
+        )
+    )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//soap:Envelope/soap:Body/wst:RequestSecurityToken/wst:RequestType/text()",
+                requestSecurityTokenNamespace, WireMock.equalTo("http://docs.oasis-open.org/ws-sx/ws-trust/200512/Issue")
+            )
+        )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//soap:Envelope/soap:Body/wst:RequestSecurityToken/wst:SecondaryParameters/wst:TokenType/text()",
+                requestSecurityTokenNamespace, WireMock.containing("http://docs.oasis-open.org/wss/oasis-wss-saml-token-profile-1.1#SAMLV2.0")
+            )
+        )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//soap:Envelope/soap:Body/wst:RequestSecurityToken/wst:SecondaryParameters/wst:KeyType/text()",
+                requestSecurityTokenNamespace, WireMock.equalTo("http://docs.oasis-open.org/ws-sx/ws-trust/200512/Bearer")
+            )
+        )
 }
 
 fun MappingBuilder.withSamlAssertion(username: String, issuer: String, issuerName: String, digest: String, signature: String, certificate: String): MappingBuilder {
-    return withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Header/wsse:Security/saml2:Assertion/saml2:Issuer/text()",
-        saml2Namespace, WireMock.equalTo(issuer)))
-        .withRequestBody(MatchesXPathPattern("//*[local-name()=\"DigestValue\"]/text()",
-            saml2Namespace, WireMock.equalTo(digest)))
-        .withRequestBody(MatchesXPathPattern("//*[local-name()=\"SignatureValue\"]/text()",
-            saml2Namespace, WireMock.equalTo(signature)))
-        .withRequestBody(MatchesXPathPattern("//*[local-name()=\"X509Certificate\"]/text()",
-            saml2Namespace, WireMock.equalTo(certificate)))
-        .withRequestBody(MatchesXPathPattern("//*[local-name()=\"X509IssuerName\"]/text()",
-            saml2Namespace, WireMock.equalTo(issuerName)))
-        .withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Header/wsse:Security/saml2:Assertion/saml2:Subject/saml2:NameID/text()",
-            saml2Namespace, WireMock.equalTo(username)))
-        .withRequestBody(MatchesXPathPattern("//soap:Envelope/soap:Header/wsse:Security/saml2:Assertion/saml2:AttributeStatement/saml2:Attribute/saml2:AttributeValue/text()",
-            saml2Namespace, WireMock.equalTo(username)))
+    return withRequestBody(
+        MatchesXPathPattern(
+            "//soap:Envelope/soap:Header/wsse:Security/saml2:Assertion/saml2:Issuer/text()",
+            saml2Namespace, WireMock.equalTo(issuer)
+        )
+    )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//*[local-name()=\"DigestValue\"]/text()",
+                saml2Namespace, WireMock.equalTo(digest)
+            )
+        )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//*[local-name()=\"SignatureValue\"]/text()",
+                saml2Namespace, WireMock.equalTo(signature)
+            )
+        )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//*[local-name()=\"X509Certificate\"]/text()",
+                saml2Namespace, WireMock.equalTo(certificate)
+            )
+        )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//*[local-name()=\"X509IssuerName\"]/text()",
+                saml2Namespace, WireMock.equalTo(issuerName)
+            )
+        )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//soap:Envelope/soap:Header/wsse:Security/saml2:Assertion/saml2:Subject/saml2:NameID/text()",
+                saml2Namespace, WireMock.equalTo(username)
+            )
+        )
+        .withRequestBody(
+            MatchesXPathPattern(
+                "//soap:Envelope/soap:Header/wsse:Security/saml2:Assertion/saml2:AttributeStatement/saml2:Attribute/saml2:AttributeValue/text()",
+                saml2Namespace, WireMock.equalTo(username)
+            )
+        )
 }
 
 private val wsseNamespace = mapOf(

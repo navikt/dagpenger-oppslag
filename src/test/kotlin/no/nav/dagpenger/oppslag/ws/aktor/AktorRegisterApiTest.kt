@@ -10,7 +10,6 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.mockk.mockk
-import java.util.UUID
 import no.nav.dagpenger.oidc.OidcClient
 import no.nav.dagpenger.oidc.OidcToken
 import no.nav.dagpenger.oidc.StsOidcClient
@@ -25,6 +24,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class AktorRegisterApiTest {
     private val joarkClientSoapMock = mockk<JoarkClient>()
@@ -119,7 +119,8 @@ class AktorRegisterApiTest {
         }
     }
 
-    private val validJsonBodyWithoutNorskIdent = """
+    private val validJsonBodyWithoutNorskIdent =
+        """
         {
             "1234567891234": {
                 "identer": [
@@ -132,9 +133,10 @@ class AktorRegisterApiTest {
                 "feilmelding": null
             }
         }
-    """.trimIndent()
+        """.trimIndent()
 
-    private val validJsonBodyWithNorskIdent = """
+    private val validJsonBodyWithNorskIdent =
+        """
         {
             "1234567891234": {
                 "identer": [
@@ -152,20 +154,22 @@ class AktorRegisterApiTest {
                 "feilmelding": null
             }
         }
-    """.trimIndent()
+        """.trimIndent()
 
     private fun testApp(aktorRegisterHttpClient: AktorRegisterHttpClient, callback: TestApplicationEngine.() -> Unit) {
         val jwtIssuer = "test issuer"
 
         withTestApplication({
-            (oppslag(
-                aktorRegisterClient = aktorRegisterHttpClient,
-                enhetRegisterClient = enhetClientMock,
-                joarkClient = joarkClientSoapMock,
-                jwkProvider = jwtStub.stubbedJwkProvider(),
-                jwtIssuer = jwtIssuer,
-                personClient = personClientMock
-            ))
+            (
+                oppslag(
+                    aktorRegisterClient = aktorRegisterHttpClient,
+                    enhetRegisterClient = enhetClientMock,
+                    joarkClient = joarkClientSoapMock,
+                    jwkProvider = jwtStub.stubbedJwkProvider(),
+                    jwtIssuer = jwtIssuer,
+                    personClient = personClientMock
+                )
+                )
         }) { callback() }
     }
 }

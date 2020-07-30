@@ -151,7 +151,8 @@ private val personNamespace = mapOf(
     "ns3" to "http://nav.no/tjeneste/virksomhet/person/v3/informasjon"
 )
 
-val hentGeografiskTilknytning_response = """
+val hentGeografiskTilknytning_response =
+    """
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v3="http://nav.no/tjeneste/virksomhet/person/v3" xmlns:ns3="http://nav.no/tjeneste/virksomhet/person/v3/informasjon">
 	<soapenv:Header/>
 	<soapenv:Body>

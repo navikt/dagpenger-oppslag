@@ -60,7 +60,8 @@ class EnhetsRegisterClientTest {
         }
     }
 
-    val validJsonBodyWithNorskOrg = """
+    val validJsonBodyWithNorskOrg =
+        """
         {"organisasjonsnummer":"974760673",
         "navn":"REGISTERENHETEN I BRØNNØYSUND",
         "organisasjonsform":{"kode":"ORGL",
@@ -92,5 +93,6 @@ class EnhetsRegisterClientTest {
             "underTvangsavviklingEllerTvangsopplosning":false,"maalform":"Bokmål",
             "_links":{"self":{"href":"https://data.brreg.no/enhetsregisteret/api/enheter/974760673"},
             "overordnetEnhet":{"href":"https://data.brreg.no/enhetsregisteret/api/enheter/912660680"}}
-            }""".trimIndent()
+            }
+        """.trimIndent()
 }

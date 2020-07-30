@@ -1,11 +1,11 @@
 package no.nav.dagpenger.oppslag.ws
 
-import javax.xml.namespace.QName
 import no.nav.cxf.metrics.MetricFeature
 import no.nav.tjeneste.virksomhet.person.v3.binding.PersonV3
 import org.apache.cxf.ext.logging.LoggingFeature
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean
 import org.apache.cxf.ws.addressing.WSAddressingFeature
+import javax.xml.namespace.QName
 
 object SoapPort {
 
