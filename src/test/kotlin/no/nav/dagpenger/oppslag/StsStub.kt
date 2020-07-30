@@ -12,15 +12,18 @@ fun stsStub(stsUsername: String, stsPassword: String): MappingBuilder {
 }
 
 fun samlAssertionResponse(username: String, issuer: String, issuerName: String, digest: String, signature: String, certificate: String): ResponseDefinitionBuilder {
-    return WireMock.okXml(sts_response.replace("{{username}}", username)
-        .replace("{{issuer}}", issuer)
-        .replace("{{digest}}", digest)
-        .replace("{{signature}}", signature)
-        .replace("{{certificate}}", certificate)
-        .replace("{{issuerName}}", issuerName))
+    return WireMock.okXml(
+        sts_response.replace("{{username}}", username)
+            .replace("{{issuer}}", issuer)
+            .replace("{{digest}}", digest)
+            .replace("{{signature}}", signature)
+            .replace("{{certificate}}", certificate)
+            .replace("{{issuerName}}", issuerName)
+    )
 }
 
-private val sts_response = """
+private val sts_response =
+    """
 <?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:wsa="http://www.w3.org/2005/08/addressing" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
     <soapenv:Header>
@@ -90,4 +93,4 @@ private val sts_response = """
         </wst:RequestSecurityTokenResponseCollection>
     </soapenv:Body>
 </soapenv:Envelope>
-""".trimIndent()
+    """.trimIndent()

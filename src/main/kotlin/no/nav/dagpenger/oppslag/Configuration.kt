@@ -110,17 +110,21 @@ internal data class Configuration(
     )
 
     data class ArbeidsfordelingApi(
-        val endpoint: String = config()[Key(
-            "virksomhet.arbeidsfordeling.v1.endpointurl",
-            stringType
-        )]
+        val endpoint: String = config()[
+            Key(
+                "virksomhet.arbeidsfordeling.v1.endpointurl",
+                stringType
+            )
+        ]
     )
 
     data class ArenaOppgaveApi(
-        val endpoint: String = config()[Key(
-            "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl",
-            stringType
-        )]
+        val endpoint: String = config()[
+            Key(
+                "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl",
+                stringType
+            )
+        ]
     )
 
     data class ArenaHentSakerApi(

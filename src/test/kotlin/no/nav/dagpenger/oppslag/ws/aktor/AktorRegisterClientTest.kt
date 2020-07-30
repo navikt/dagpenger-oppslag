@@ -3,7 +3,6 @@ package no.nav.dagpenger.oppslag.ws.aktor
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import java.util.UUID
 import no.nav.dagpenger.oidc.OidcClient
 import no.nav.dagpenger.oidc.OidcToken
 import org.junit.jupiter.api.AfterAll
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class AktorRegisterClientTest {
     companion object {
@@ -43,16 +43,16 @@ class AktorRegisterClientTest {
         val testAktørId = "1234567891234"
 
         WireMock.stubFor(
-                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
-                        .withHeader("Nav-Personidenter", WireMock.equalTo(testAktørId))
-                        .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNoNorwegianIdent))
+            WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
+                .withHeader("Nav-Personidenter", WireMock.equalTo(testAktørId))
+                .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNoNorwegianIdent))
         )
 
         val aktørregisterHttpClient =
-                AktorRegisterHttpClient(
-                        server.url(""),
-                        DummyOidcClient()
-                )
+            AktorRegisterHttpClient(
+                server.url(""),
+                DummyOidcClient()
+            )
 
         val responseFnr = aktørregisterHttpClient.gjeldendeNorskIdent(testAktørId)
 
@@ -64,23 +64,24 @@ class AktorRegisterClientTest {
         val testFnr = "12345678912"
 
         WireMock.stubFor(
-                WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
-                        .withHeader("Nav-Personidenter", WireMock.equalTo(testAktørId))
-                        .willReturn(WireMock.aResponse().withBody(validJsonBody))
+            WireMock.get(WireMock.urlEqualTo("//v1/identer?gjeldende=true"))
+                .withHeader("Nav-Personidenter", WireMock.equalTo(testAktørId))
+                .willReturn(WireMock.aResponse().withBody(validJsonBody))
         )
 
         val aktørregisterHttpClient =
-                AktorRegisterHttpClient(
-                        server.url(""),
-                        DummyOidcClient()
-                )
+            AktorRegisterHttpClient(
+                server.url(""),
+                DummyOidcClient()
+            )
 
         val responseFnr = aktørregisterHttpClient.gjeldendeNorskIdent(testAktørId)
 
         Assertions.assertEquals(testFnr, responseFnr)
     }
 
-    val validJsonBody = """
+    val validJsonBody =
+        """
         {
             "1234567891234": {
                 "identer": [
@@ -99,7 +100,8 @@ class AktorRegisterClientTest {
             }
         }
         """.trimIndent()
-    val validJsonBodyWithNoNorwegianIdent = """
+    val validJsonBodyWithNoNorwegianIdent =
+        """
         {
             "1234567891234": {
                 "identer": [
