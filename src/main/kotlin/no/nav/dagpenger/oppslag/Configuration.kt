@@ -38,16 +38,16 @@ private val localProperties = ConfigurationMap(
 private val devProperties = ConfigurationMap(
     mapOf(
         "application.profile" to Profile.DEV.toString(),
-        "securitytokenservice.url" to "https://sts-t4.test.local/SecurityTokenServiceProvider/",
-        "aktor.url" to "https://app-t4.adeo.no/aktoerregister/api",
+        "securitytokenservice.url" to "https://sts-q1.test.local/SecurityTokenServiceProvider/",
+        "aktor.url" to "https://app-q1.adeo.no/aktoerregister/api",
         "virksomhet.person.v3.endpointurl" to "https://wasapp-t4.adeo.no/tpsws/ws/Person/v3",
         "virksomhet.arbeidsfordeling.v1.endpointurl" to "https://app-t4.adeo.no/norg2/ws/Arbeidsfordeling/v1",
         "virksomhet.behandlearbeidogaktivitetoppgave.v1.endpointurl" to "https://arena-t4.adeo.no/ail_ws/BehandleArbeidOgAktivitetOppgave_v1",
-        "journalfoerinngaaende.v1.url" to "https://dokarkiv-t4.nais.preprod.local/rest/journalfoerinngaaende/v1",
-        "virksomhet.inntekt.v3.endpointurl" to "https://app-t4.adeo.no/inntektskomponenten-ws/inntekt/v3/Inntekt",
+        "journalfoerinngaaende.v1.url" to "https://dokarkiv-q1.nais.preprod.local/rest/journalfoerinngaaende/v1",
+        "virksomhet.inntekt.v3.endpointurl" to "https://app-q1.adeo.no/inntektskomponenten-ws/inntekt/v3/Inntekt",
         "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api",
-        "jwks.url" to "https://security-token-service-t4.nais.preprod.local/rest/v1/sts/jwks",
-        "jwt.issuer" to "https://security-token-service-t4.nais.preprod.local"
+        "jwks.url" to "https://security-token-service.nais.preprod.local/rest/v1/sts/jwks",
+        "jwt.issuer" to "https://security-token-service.nais.preprod.local"
     )
 )
 private val prodProperties = ConfigurationMap(
