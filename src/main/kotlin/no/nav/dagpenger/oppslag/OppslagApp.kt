@@ -144,13 +144,21 @@ fun Application.oppslag(
     }
     install(StatusPages) {
         exception<JsonDataException> { cause ->
-            LOGGER.warn("Request does not match expected json", cause)
+            LOGGER.warn(cause) { "Request does not match expected json" }
             val error = Problem(
                 type = URI("urn:dp:error:oppslag:parameter"),
                 title = "Parameteret er ikke gyldig, mangler obligatorisk felt: '${cause.message}'",
                 status = 400
             )
             call.respond(HttpStatusCode.BadRequest, error)
+        }
+        exception<Throwable> { cause ->
+            LOGGER.error(cause) { "Request failed!" }
+            val error = Problem(
+                type = URI("urn:dp:error:oppslag"),
+                title = "Uhåndtert feil!"
+            )
+            call.respond(HttpStatusCode.InternalServerError, error)
         }
     }
 
